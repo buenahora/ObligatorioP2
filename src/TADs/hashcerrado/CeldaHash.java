@@ -1,10 +1,13 @@
 package TADs.hashcerrado;
 
-public class celdahash {
+public class CeldaHash {
+        public static final int Vacio = 0;
+        public static final int Ocupado = 1;
+        public static final int Borrado = 2;
         private Object elemento;
         private int estado;
 
-        public celdahash(Object elemento, int estado){
+        public CeldaHash(Object elemento, int estado){
             this.elemento = elemento;
             this.estado = estado;
         }
