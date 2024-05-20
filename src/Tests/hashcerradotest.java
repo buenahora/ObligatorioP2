@@ -38,6 +38,7 @@ public class hashcerradotest {
 
         assertEquals(2,hash.getSize());
         assertFalse(hash.pertenece(7));
+        //assertEquals(hash.getTabla()[hash.hash(7)],2); //falta mejorar
     }
     @Test
     public void testExpandirTabla(){

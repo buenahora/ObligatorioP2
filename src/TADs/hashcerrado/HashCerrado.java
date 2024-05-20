@@ -8,6 +8,11 @@ public class HashCerrado {
     public int getSize() {
         return size;
     }
+
+    public CeldaHash[] getTabla() {
+        return tabla;
+    }
+
     // Constructor de la clase
     public HashCerrado() {
         // Inicializa la tabla con un tamaño inicial y todas las celdas vacías
