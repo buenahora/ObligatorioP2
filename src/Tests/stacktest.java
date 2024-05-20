@@ -26,13 +26,13 @@ public class stacktest {
         assertEquals(2, stack.size());
 
         stack.push(3);
-        assertEquals(2, stack.size());
+        assertEquals(3, stack.size());
 
         stack.push(4);
-        assertEquals(2, stack.size());
+        assertEquals(4, stack.size());
 
         stack.push(5);
-        assertEquals(2, stack.size());
+        assertEquals(5, stack.size());
     }
 
 

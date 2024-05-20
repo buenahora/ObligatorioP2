@@ -7,7 +7,6 @@ public class hashcerrado {
     public static final int vacio = 0;
     public static final int ocupado = 1;
     public static final int borrado = -1;
-
     public hashcerrado() {
         this.hash = new celdahash[this.size];
         cant = 0;
@@ -52,7 +51,7 @@ public class hashcerrado {
 
             if (this.hash[pos].getEstado() == ocupado) {
 
-                encontrado = this.hash[pos].getElem() == buscado;
+                encontrado = this.hash[pos].getElemento() == buscado;
                 if (encontrado) {
                     // Si lo encuentra lo marca y para el ciclo
                     this.hash[pos].setEstado(borrado);
