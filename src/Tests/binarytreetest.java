@@ -1,4 +1,6 @@
 package Tests;
+import Classes.Exceptions.DuplicateKeyTreeException;
+import Classes.Exceptions.EmptyQueueException;
 import TADs.binarytree.SearchBinaryTreeImpl;
 
 import TADs.linkedlist.MyList;
@@ -19,7 +21,7 @@ public class binarytreetest {
     }
 
     @Test
-    public void testAdd() {
+    public void testAdd() throws DuplicateKeyTreeException {
         arbol.add(5);
         arbol.add(2);
         arbol.add(7);
@@ -29,9 +31,16 @@ public class binarytreetest {
         assertEquals(Integer.valueOf(7), arbol.root.getRight().getValue());
     }
 
+    @Test(expected = DuplicateKeyTreeException.class)
+    public void testAddDuplicateKey() throws DuplicateKeyTreeException {
+        arbol.add(5);
+        arbol.add(5);
+
+    }
+
 
     @Test
-    public void testAddAndFind() {
+    public void testAddAndFind() throws DuplicateKeyTreeException {
         arbol.add(5);
         assertEquals(Integer.valueOf(5), arbol.find(5));
     }
@@ -63,14 +72,14 @@ public class binarytreetest {
 //    }
 
     @Test
-    public void testContains() {
+    public void testContains() throws DuplicateKeyTreeException {
         arbol.add(5);
         assertTrue(arbol.contains(5));
         assertFalse(arbol.contains(10));
     }
 
     @Test
-    public void testInOrder() {
+    public void testInOrder() throws DuplicateKeyTreeException {
         arbol.add(5);
         arbol.add(10);
         arbol.add(3);
@@ -87,7 +96,7 @@ public class binarytreetest {
 
 
     @Test
-    public void testPostOrder() {
+    public void testPostOrder() throws DuplicateKeyTreeException {
         arbol.add(5);
 
         arbol.add(10);
@@ -115,7 +124,7 @@ public class binarytreetest {
     }
 
     @Test
-    public void testPreOrder() {
+    public void testPreOrder() throws DuplicateKeyTreeException {
         arbol.add(5);
 
         arbol.add(10);

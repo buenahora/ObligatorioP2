@@ -3,6 +3,8 @@
  */
 package TADs.binarytree;
 
+import Classes.Exceptions.DuplicateKeyTreeException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,8 +18,12 @@ public class SearchBinaryTreeImpl<T extends Comparable<T>> implements
 
 	public TreeNode<T> root;
 
-	public void add(T oElement) {
+	public void add(T oElement) throws DuplicateKeyTreeException {
 		TreeNode<T> oElementToAdd = new TreeNode<T>(oElement);
+
+		if(this.find(oElement) != null) {
+			throw new DuplicateKeyTreeException();
+		}
 
 		if (root == null) {
 

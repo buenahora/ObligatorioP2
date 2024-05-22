@@ -1,5 +1,6 @@
 package TADs.binarytree;
 
+import Classes.Exceptions.DuplicateKeyTreeException;
 import TADs.linkedlist.MyList;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  */
 public interface BinaryTree<T extends Comparable<T>> {
 
-	void add(T oElement);
+	void add(T oElement) throws DuplicateKeyTreeException;
 
 	void remove(T oElement);
 
