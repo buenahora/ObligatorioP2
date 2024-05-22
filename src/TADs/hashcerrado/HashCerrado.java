@@ -1,7 +1,11 @@
 package TADs.hashcerrado;
+
+import Classes.Exceptions.HashExceptions.DuplicateKey;
+
 public class HashCerrado {
     private static final int TAMANIO_INICIAL = 10; // Tamaño inicial de la tabla
     private CeldaHash[] tabla; // Array que representa la tabla de hash
+    private  int size_borrados;
     private int size; // Cantidad de elementos en la tabla
 
     //Getter del size
@@ -21,6 +25,7 @@ public class HashCerrado {
             tabla[i] = new CeldaHash(null, CeldaHash.Vacio);
         }
         this.size = 0; // Inicialmente, la tabla no tiene elementos
+        this.size_borrados = 0;
     }
 
     // Función hash: transforma la clave en un índice de la tabla
@@ -29,16 +34,21 @@ public class HashCerrado {
     }
 
     // Inserta una nueva clave en la tabla
-    public void insertar(Object key) {
+    public void insertar(Object key) throws DuplicateKey {
+
+        if (pertenece(key)) {// si se intenta agregar el mismo elemento 2 veces tira error
+            throw new DuplicateKey();
+        }
+
         // Si la tabla está llena, se duplica su tamaño
-        if (size == tabla.length) {
+        if (size_borrados == tabla.length) {
             expandirTabla();
         }
 
         // Calcula el índice de la clave
         int i = hash(key);
         // Si la celda está ocupada, busca la siguiente celda vacía
-        while (tabla[i].getEstado() == CeldaHash.Ocupado) {
+        while (tabla[i].getEstado() == CeldaHash.Ocupado&& tabla[i].getEstado() == CeldaHash.Borrado) {
             i = (i + 1) % tabla.length;
         }
 
@@ -46,6 +56,7 @@ public class HashCerrado {
         tabla[i].setElemento(key);
         tabla[i].setEstado(CeldaHash.Ocupado);
         size++; // Incrementa el tamaño de la tabla
+        size_borrados++;
     }
 
     // Verifica si una clave pertenece a la tabla
@@ -81,12 +92,13 @@ public class HashCerrado {
     }
 
     // Expande la tabla de hash al duplicar su tamaño
-    private void expandirTabla() {
+    private void expandirTabla() throws DuplicateKey {
         // Guarda la tabla antigua
         CeldaHash[] tablaAntigua = tabla;
         // Crea una nueva tabla con el doble de tamaño
         tabla = new CeldaHash[2 * tablaAntigua.length];
         size = 0; // Reinicia el tamaño de la tabla
+        size_borrados = 0;
         // Inicializa la nueva tabla con todas las celdas vacías
         for (int i = 0; i < tabla.length; i++) {
             tabla[i] = new CeldaHash(null, CeldaHash.Vacio);
@@ -98,4 +110,5 @@ public class HashCerrado {
             }
         }
     }
+
 }
