@@ -1,6 +1,5 @@
 package Tests;
-import Classes.Exceptions.EmptyQueueException;
-import Classes.Exceptions.EmptyStackException;
+import Classes.Exceptions.QueueExceptions.EmptyQueueException;
 import TADs.linkedlist.MyLinkedListImpl;
 import TADs.queue.MyQueue;
 import org.junit.Assert;
@@ -50,5 +49,27 @@ public class queuetest {
         Assert.assertEquals(0, queue.size());
         queue.enqueue(1);
         Assert.assertEquals(1, queue.size());
+    }
+
+    @Test
+    public void testIsEmpty() {
+        Assert.assertTrue(queue.isEmpty());
+        queue.enqueue(1);
+        Assert.assertFalse(queue.isEmpty());
+    }
+
+    @Test
+    public void testGet() {
+        queue.enqueue(1);
+        queue.enqueue(2);
+        queue.enqueue(3);
+        Assert.assertEquals(Integer.valueOf(3), queue.get(0));
+        Assert.assertEquals(Integer.valueOf(2), queue.get(1));
+        Assert.assertEquals(Integer.valueOf(1), queue.get(2));
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testGetVacio() throws NullPointerException {
+        queue.get(5);
     }
 }

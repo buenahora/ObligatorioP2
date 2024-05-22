@@ -1,4 +1,4 @@
-package Classes.Exceptions;
+package Classes.Exceptions.StackExceptions;
 
 public class EmptyStackException extends Exception {
 

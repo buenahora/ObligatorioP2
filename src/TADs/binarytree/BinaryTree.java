@@ -1,7 +1,6 @@
 package TADs.binarytree;
 
-import Classes.Exceptions.DuplicateKeyTreeException;
-import TADs.linkedlist.MyList;
+import Classes.Exceptions.BinaryTreeExceptions.DuplicateKeyTreeException;
 
 import java.util.List;
 

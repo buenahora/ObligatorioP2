@@ -66,5 +66,9 @@ public class linkedlisttest {
         lista.add(5);
         assertFalse(lista.isEmpty());
     }
+    @Test(expected = NullPointerException.class)
+    public void testGetVacio() throws NullPointerException {
+        lista.get(10);
+    }
 
 }

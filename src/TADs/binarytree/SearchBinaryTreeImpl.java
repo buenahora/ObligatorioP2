@@ -3,7 +3,7 @@
  */
 package TADs.binarytree;
 
-import Classes.Exceptions.DuplicateKeyTreeException;
+import Classes.Exceptions.BinaryTreeExceptions.DuplicateKeyTreeException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +68,11 @@ public class SearchBinaryTreeImpl<T extends Comparable<T>> implements
 	}
 
 	public void remove(T oElement) {
+
+		if(root.getLeft() == null && root.getRight() == null) {
+			root = null;
+			return;
+		}
 
 		if (root != null) {
 

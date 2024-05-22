@@ -1,6 +1,6 @@
 package TADs.hashcerrado;
 
-import Classes.Exceptions.HashExceptions.DuplicateKey;
+import Classes.Exceptions.HashExceptions.DuplicateKeyHash;
 
 public class HashCerrado {
     private static final int TAMANIO_INICIAL = 10; // Tamaño inicial de la tabla
@@ -34,14 +34,14 @@ public class HashCerrado {
     }
 
     // Inserta una nueva clave en la tabla
-    public void insertar(Object key) throws DuplicateKey {
+    public void insertar(Object key) throws DuplicateKeyHash {
 
         if (pertenece(key)) {// si se intenta agregar el mismo elemento 2 veces tira error
-            throw new DuplicateKey();
+            throw new DuplicateKeyHash();
         }
 
         // Si la tabla está llena, se duplica su tamaño
-        if (size_borrados == tabla.length) {
+        if (size_borrados >= Math.round((tabla.length * 0.75))) {
             expandirTabla();
         }
 
@@ -92,7 +92,7 @@ public class HashCerrado {
     }
 
     // Expande la tabla de hash al duplicar su tamaño
-    private void expandirTabla() throws DuplicateKey {
+    private void expandirTabla() throws DuplicateKeyHash {
         // Guarda la tabla antigua
         CeldaHash[] tablaAntigua = tabla;
         // Crea una nueva tabla con el doble de tamaño

@@ -1,7 +1,7 @@
 package TADs.stack;
 
 
-import Classes.Exceptions.EmptyStackException;
+import Classes.Exceptions.StackExceptions.EmptyStackException;
 
 public interface MyStack<T> {
 

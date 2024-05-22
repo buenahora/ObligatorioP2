@@ -1,14 +1,11 @@
 package Tests;
-import Classes.Exceptions.DuplicateKeyTreeException;
-import Classes.Exceptions.EmptyQueueException;
+import Classes.Exceptions.BinaryTreeExceptions.DuplicateKeyTreeException;
 import TADs.binarytree.SearchBinaryTreeImpl;
 
-import TADs.linkedlist.MyList;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -40,36 +37,36 @@ public class binarytreetest {
 
 
     @Test
-    public void testAddAndFind() throws DuplicateKeyTreeException {
+    public void testFind() throws DuplicateKeyTreeException {
         arbol.add(5);
         assertEquals(Integer.valueOf(5), arbol.find(5));
     }
 
-//    @Test
-//    public void testRemove() {
-//        arbol.add(5);
-//        arbol.add(2);
-//        arbol.add(7);
-//
-//        arbol.remove(5);
-//        assertEquals(Integer.valueOf(7), arbol.root.getValue());
-//
-//        arbol.remove(7);
-//        assertEquals(Integer.valueOf(2), arbol.root.getValue());
-//
-//        arbol.remove(2);
-//
-//        arbol.add(5);
-//        arbol.add(2);
-//        arbol.add(7);
-//
-//        arbol.remove(2);
-//        arbol.remove(7);
-//
-//        assertNull(arbol.root.getLeft());
-//        assertNull(arbol.root.getRight());
-//
-//    }
+    @Test
+    public void testRemove() throws DuplicateKeyTreeException {
+        arbol.add(5);
+        arbol.add(2);
+        arbol.add(7);
+
+        arbol.remove(5);
+        assertEquals(Integer.valueOf(7), arbol.root.getValue());
+
+        assertNull(arbol.find(5));
+
+        arbol.remove(7);
+        arbol.remove(2);
+
+        arbol.add(5);
+        arbol.add(2);
+        arbol.add(7);
+
+        arbol.remove(2);
+        arbol.remove(7);
+
+        assertNull(arbol.root.getLeft());
+        assertNull(arbol.root.getRight());
+
+    }
 
     @Test
     public void testContains() throws DuplicateKeyTreeException {
@@ -108,8 +105,6 @@ public class binarytreetest {
         arbol.add(2);
         arbol.add(4);
         List<Integer> postOrderList = arbol.posOrder();
-
-        System.out.println(postOrderList);
 
         assertEquals(Integer.valueOf(2), postOrderList.get(0));
         assertEquals(Integer.valueOf(4), postOrderList.get(1));

@@ -1,7 +1,7 @@
 package TADs.linkedlist;
 
-import Classes.Exceptions.EmptyQueueException;
-import Classes.Exceptions.EmptyStackException;
+import Classes.Exceptions.QueueExceptions.EmptyQueueException;
+import Classes.Exceptions.StackExceptions.EmptyStackException;
 import TADs.queue.MyQueue;
 import TADs.stack.MyStack;
 
@@ -68,6 +68,11 @@ public class MyLinkedListImpl<T> implements MyList<T>, MyQueue<T>, MyStack<T> {
         return this.first;
     }
     public T get(int position) {
+
+        if(position > this.size() - 1) {
+            throw new NullPointerException();
+        }
+
         T valueToReturn = null;
         int tempPosition = 0;
         Node<T> temp = this.first;
@@ -152,12 +157,7 @@ public class MyLinkedListImpl<T> implements MyList<T>, MyQueue<T>, MyStack<T> {
 
             }
 
-        } else {
-
-            // Si no es encuentra el valor a eliminar no se realiza nada
-
         }
-
     }
 
     private T removeLast() { // esta operación remueve el último elemento y retorna el elemento eliminado

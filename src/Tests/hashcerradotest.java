@@ -1,5 +1,5 @@
 package Tests;
-import Classes.Exceptions.HashExceptions.DuplicateKey;
+import Classes.Exceptions.HashExceptions.DuplicateKeyHash;
 import TADs.hashcerrado.HashCerrado;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,19 +11,19 @@ public class hashcerradotest {
         hash = new HashCerrado();
     }
     @Test
-    public void testInsertar() throws DuplicateKey {
+    public void testInsertar() throws DuplicateKeyHash {
         hash.insertar(1);
         assertEquals(1,hash.getSize());
         hash.insertar(3);
         assertEquals(2,hash.getSize());
     }
-    @Test(expected = DuplicateKey.class)
-    public void testInsertarDuplicado() throws DuplicateKey {
+    @Test(expected = DuplicateKeyHash.class)
+    public void testInsertarDuplicado() throws DuplicateKeyHash {
         hash.insertar(1);
         hash.insertar(1);
     }
     @Test
-    public void testPertenece() throws DuplicateKey {
+    public void testPertenece() throws DuplicateKeyHash {
         hash.insertar(10);
         hash.insertar(5);
         hash.insertar(7);
@@ -33,7 +33,7 @@ public class hashcerradotest {
         assertFalse(hash.pertenece(3));
     }
     @Test
-    public void testEliminar() throws DuplicateKey {
+    public void testEliminar() throws DuplicateKeyHash {
         hash.insertar(10);
         hash.insertar(5);
         hash.insertar(7);
@@ -44,15 +44,11 @@ public class hashcerradotest {
         assertEquals(2,hash.getTabla()[7].getEstado());//verifica que la celda esta marcada como borrada
     }
     @Test
-    public void testExpandirTabla(){
+    public void testExpandirTabla() throws DuplicateKeyHash {
         for (int i = 0; i < 11; i++) {
-            try {
                 hash.insertar(i);
-            } catch (DuplicateKey duplicateKey) {
-                System.out.println("Error");
-            }
         }
-        assertEquals(10,hash.getSize());
+        assertEquals(11,hash.getSize());
         assertEquals(20,hash.getTabla().length);
     }
 }
