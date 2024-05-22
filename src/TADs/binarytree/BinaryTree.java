@@ -1,0 +1,28 @@
+package TADs.binarytree;
+
+import Classes.Exceptions.DuplicateKeyTreeException;
+import TADs.linkedlist.MyList;
+
+import java.util.List;
+
+/**
+ * @author pegardan
+ *
+ */
+public interface BinaryTree<T extends Comparable<T>> {
+
+	void add(T oElement) throws DuplicateKeyTreeException;
+
+	void remove(T oElement);
+
+	boolean contains(T oElement);
+
+	T find(T oElement);
+
+	List<T> preOrder();
+
+	List<T> posOrder();
+
+	List<T> inOrder();
+
+}

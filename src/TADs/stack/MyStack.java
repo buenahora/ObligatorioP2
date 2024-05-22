@@ -13,5 +13,5 @@ public interface MyStack<T> {
 	
 	int size();
 
-	T get(int i);
+	boolean isEmpty();
 }
