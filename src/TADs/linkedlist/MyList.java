@@ -12,7 +12,7 @@ public interface MyList<T> {
 
     int size();
 
-    Node<T> getPrimero();
+    Node<T> getFirst();
 
-    void recorro_recu(Node<T> primero);
+    boolean isEmpty();
 }

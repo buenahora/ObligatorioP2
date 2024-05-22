@@ -57,7 +57,14 @@ public class linkedlisttest {
         lista.add(10);
         lista.add(15);
         lista.add(20);
-        assertEquals(Integer.valueOf(5), lista.getPrimero().getValue());
+        assertEquals(Integer.valueOf(5), lista.getFirst().getValue());
+    }
+
+    @Test
+    public void testIsEmpty() {
+        assertTrue(lista.isEmpty());
+        lista.add(5);
+        assertFalse(lista.isEmpty());
     }
 
 }

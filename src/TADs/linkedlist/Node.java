@@ -6,6 +6,8 @@ public class Node<T> {
 
     private Node<T> next;
 
+    private int priority;
+
     public Node(T value) {
         this.value = value;
         this.next = null;
@@ -25,5 +27,13 @@ public class Node<T> {
 
     public void setNext(Node<T> next) {
         this.next = next;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
     }
 }
