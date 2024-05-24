@@ -46,22 +46,22 @@ public class binarytreetest {
     public void testRemove() throws DuplicateKeyTreeException {
         arbol.add(5);
         arbol.add(2);
-        arbol.add(7);
+        arbol.add(9);
 
         arbol.remove(5);
-        assertEquals(Integer.valueOf(7), arbol.root.getValue());
+        assertEquals(Integer.valueOf(9), arbol.root.getValue());
 
         assertNull(arbol.find(5));
 
-        arbol.remove(7);
         arbol.remove(2);
+        arbol.remove(9);
 
         arbol.add(5);
         arbol.add(2);
-        arbol.add(7);
+        arbol.add(9);
 
         arbol.remove(2);
-        arbol.remove(7);
+        arbol.remove(9);
 
         assertNull(arbol.root.getLeft());
         assertNull(arbol.root.getRight());
