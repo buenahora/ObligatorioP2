@@ -1,2 +1,2 @@
 # ObligatorioP2
-DIA 1 No entiendo nada
+Franco Buenahora, Santiago Coll, Lorenzo Martínez
