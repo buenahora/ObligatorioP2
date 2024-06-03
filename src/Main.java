@@ -1,7 +1,5 @@
 import classes.Cancion;
 
-import javax.xml.crypto.Data;
-import java.io.*;
 import java.util.AbstractList;
 import java.util.ArrayList;
 //import java.util.List;
@@ -9,7 +7,6 @@ import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Scanner;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
@@ -66,10 +63,11 @@ public class Main {
         return canciones;
     }
 
-    public static AbstractList<Cancion> top10CancionesPaisFecha(ArrayList<Cancion> canciones, String pais, String fecha) {
-
+    public static ArrayList<Cancion> top10CancionesPaisFecha(ArrayList<Cancion> canciones, String pais, String fecha) {
         ArrayList<Cancion> cancionesPaisFecha = new ArrayList<>();
         for (Cancion cancion : canciones) {
+            if(cancionesPaisFecha.size() == 10) break;
+
             if (cancion.getCountry().equals(pais) && cancion.getSnapshot_date().equals(fecha)) {
                 cancionesPaisFecha.add(cancion);
             }
@@ -132,7 +130,7 @@ public class Main {
             System.out.println("0. Salir");
 
             option = sc.nextInt();
-
+            sc.nextLine();
             switch (option) {
                 case 1:
                     System.out.println("Ingrese el pais: ");
@@ -143,7 +141,17 @@ public class Main {
                     String fecha = sc.nextLine();
                     fecha = fecha.trim();
 
-                    top10CancionesPaisFecha(canciones, pais, fecha);
+                    ArrayList<Cancion> cancionesPaisFecha = top10CancionesPaisFecha(canciones, pais, fecha);
+
+                    if(cancionesPaisFecha.isEmpty()) {
+                        System.out.println("No se encontraron canciones para el país y fecha ingresados.");
+                        break;
+                    }
+
+                    for (int i = 0; i < cancionesPaisFecha.size(); i++) {
+                        System.out.println((i + 1) + ". " + cancionesPaisFecha.get(i).getName() + " (" + cancionesPaisFecha.get(i).getArtists() + ")");
+                    }
+                    System.out.println();
                     break;
                 case 2:
                     // Aquí va la lógica para la opción 2
