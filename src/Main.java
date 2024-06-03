@@ -1,4 +1,4 @@
-import classes.Cancion;
+import Classes.Cancion;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
@@ -68,7 +68,7 @@ public class Main {
         for (Cancion cancion : canciones) {
             if(cancionesPaisFecha.size() == 10) break;
 
-            if (cancion.getCountry().equals(pais) && cancion.getSnapshot_date().equals(fecha)) {
+            if (cancion.getCountry().equals(pais) && cancion.getSnapshot_date().equals(fecha) && cancion.getDaily_rank() < 10) {
                 cancionesPaisFecha.add(cancion);
             }
         }
