@@ -33,12 +33,10 @@ public class HashCerrado {
         return Math.abs(key.hashCode()) % tabla.length;
     }
 
+
+
     // Inserta una nueva clave en la tabla
     public void insertar(Object key) throws DuplicateKeyHash {
-
-        if (pertenece(key)) {// si se intenta agregar el mismo elemento 2 veces tira error
-            throw new DuplicateKeyHash();
-        }
 
         // Si la tabla está llena, se duplica su tamaño
         if (size_borrados >= Math.round((tabla.length * 0.75))) {
@@ -48,7 +46,10 @@ public class HashCerrado {
         // Calcula el índice de la clave
         int i = hash(key);
         // Si la celda está ocupada, busca la siguiente celda vacía
-        while (tabla[i].getEstado() == CeldaHash.Ocupado&& tabla[i].getEstado() == CeldaHash.Borrado) {
+        while (tabla[i].getEstado() == CeldaHash.Ocupado || tabla[i].getEstado() == CeldaHash.Borrado) {
+            if (tabla[i].getElemento().equals(key)) {
+                throw new DuplicateKeyHash();
+            }
             i = (i + 1) % tabla.length;
         }
 

@@ -1,4 +1,5 @@
 package Tests;
+import Classes.Cancion;
 import Classes.Exceptions.HashExceptions.DuplicateKeyHash;
 import TADs.hashcerrado.HashCerrado;
 import org.junit.Before;
@@ -19,8 +20,11 @@ public class hashcerradotest {
     }
     @Test(expected = DuplicateKeyHash.class)
     public void testInsertarDuplicado() throws DuplicateKeyHash {
-        hash.insertar(1);
-        hash.insertar(1);
+        Cancion cancion = new Classes.Cancion("Cancion1","Artista1","Pepe",1,1,1,"1","a",1,false,1,"a","a",1,1,1,1,1,1,1,1,1,1,1,1);
+
+        hash.insertar(cancion);
+        hash.insertar(cancion);
+
     }
     @Test
     public void testPertenece() throws DuplicateKeyHash {

@@ -1,4 +1,4 @@
-package classes;
+package Classes;
 
 import java.util.Objects;
 
@@ -34,17 +34,14 @@ public class Cancion {
     }
 
 //
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Cancion cancion = (Cancion) o;
         return Objects.equals(spotify_id, cancion.spotify_id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(spotify_id);
     }
 
     public String getName() {
