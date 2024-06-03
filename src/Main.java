@@ -1,11 +1,15 @@
 import classes.Cancion;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import javax.xml.crypto.Data;
+import java.io.*;
 import java.util.AbstractList;
 import java.util.ArrayList;
 //import java.util.List;
 //import java.util.Objects;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.Scanner;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
@@ -13,10 +17,57 @@ import java.util.Scanner;
 public class Main {
 
     public static ArrayList<Cancion> leerCanciones() {
-       return null;
+        String csvFile = "src/universal_top_spotify_songs.csv";
+        String line = "";
+        String csvSplitBy = ",";
+        ArrayList<Cancion> canciones = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
+            br.readLine();
+            while ((line = br.readLine()) != null) {
+                // use comma as separator
+                String[] data = line.split("(?<=\"),(?=\")", -1);
+                for (int i = 0; i < data.length; i++) {
+                    data[i] = data[i].substring(1, data[i].length() - 1);
+                }
+
+                Cancion cancion = new Cancion(
+                        data[0], // spotify_id
+                        data[1], // name
+                        data[2], // artists
+                        Integer.parseInt(data[3]), // daily_rank
+                        Integer.parseInt(data[4]), // daily_movement
+                        Integer.parseInt(data[5]), // weekly_movement
+                        data[6], // country
+                        data[7], // snapshot_date
+                        Integer.parseInt(data[8]), // popularity
+                        Boolean.parseBoolean(data[9]), // is_explicit
+                        Integer.parseInt(data[10]), // duration_ms
+                        data[11], // album_name
+                        data[12], // album_release_date
+                        Double.parseDouble(data[13]), // danceability
+                        Double.parseDouble(data[14]), // energy
+                        Integer.parseInt(data[15]), // key
+                        Double.parseDouble(data[16]), // loudness
+                        Integer.parseInt(data[17]), // mode
+                        Double.parseDouble(data[18]), // speechiness
+                        Double.parseDouble(data[19]), // acousticness
+                        Double.parseDouble(data[20]), // instrumentalness
+                        Double.parseDouble(data[21]), // liveness
+                        Double.parseDouble(data[22]), // valence
+                        Double.parseDouble(data[23]), // tempo
+                        Integer.parseInt(data[24]) // time_signature
+                );
+                canciones.add(cancion);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return canciones;
     }
 
     public static AbstractList<Cancion> top10CancionesPaisFecha(ArrayList<Cancion> canciones, String pais, String fecha) {
+
         ArrayList<Cancion> cancionesPaisFecha = new ArrayList<>();
         for (Cancion cancion : canciones) {
             if (cancion.getCountry().equals(pais) && cancion.getSnapshot_date().equals(fecha)) {
@@ -67,7 +118,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-//        ArrayList<Cancion> canciones = leerCanciones();
+        ArrayList<Cancion> canciones = leerCanciones();
         Scanner sc = new Scanner(System.in);
         int option;
 
@@ -84,7 +135,15 @@ public class Main {
 
             switch (option) {
                 case 1:
-                    // top10CancionesPaisFecha();
+                    System.out.println("Ingrese el pais: ");
+                    String pais = sc.nextLine();
+                    pais = pais.trim();
+
+                    System.out.println("Ingrese una fecha (YYYY-MM-DD): ");
+                    String fecha = sc.nextLine();
+                    fecha = fecha.trim();
+
+                    top10CancionesPaisFecha(canciones, pais, fecha);
                     break;
                 case 2:
                     // Aquí va la lógica para la opción 2
