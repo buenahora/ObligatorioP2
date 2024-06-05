@@ -7,17 +7,20 @@ import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.Scanner;
+import TADs.linkedlist.MyLinkedListImpl;
+import TADs.linkedlist.MyList;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
 
-    public static ArrayList<Cancion> leerCanciones() {
+    public static MyList<Cancion> leerCanciones() {
         String csvFile = "src/universal_top_spotify_songs.csv";
         String line = "";
         String csvSplitBy = ",";
-        ArrayList<Cancion> canciones = new ArrayList<>();
+        MyList<Cancion> canciones = new MyLinkedListImpl<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
             br.readLine();
@@ -63,10 +66,13 @@ public class Main {
         return canciones;
     }
 
-    public static ArrayList<Cancion> top10CancionesPaisFecha(ArrayList<Cancion> canciones, String pais, String fecha) {
-        ArrayList<Cancion> cancionesPaisFecha = new ArrayList<>();
-        for (Cancion cancion : canciones) {
-            if(cancionesPaisFecha.size() == 10) break;
+    public static MyList<Cancion> top10CancionesPaisFecha(MyList<Cancion> canciones, String pais, String fecha) {
+        MyList<Cancion> cancionesPaisFecha = new MyLinkedListImpl<>();
+
+
+        for (int i = 0; i < canciones.size(); i++) {
+            Cancion cancion = canciones.get(i);
+            if(cancionesPaisFecha.size() == 11) break;
 
             if (cancion.getCountry().equals(pais) && cancion.getSnapshot_date().equals(fecha) && cancion.getDaily_rank() < 10) {
                 cancionesPaisFecha.add(cancion);
@@ -116,7 +122,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        ArrayList<Cancion> canciones = leerCanciones();
+        MyList<Cancion> canciones = leerCanciones();
         Scanner sc = new Scanner(System.in);
         int option;
 
@@ -141,7 +147,7 @@ public class Main {
                     String fecha = sc.nextLine();
                     fecha = fecha.trim();
 
-                    ArrayList<Cancion> cancionesPaisFecha = top10CancionesPaisFecha(canciones, pais, fecha);
+                    MyList<Cancion> cancionesPaisFecha = top10CancionesPaisFecha(canciones, pais, fecha);
 
                     if(cancionesPaisFecha.isEmpty()) {
                         System.out.println("No se encontraron canciones para el país y fecha ingresados.");
