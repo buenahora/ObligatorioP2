@@ -11,12 +11,14 @@ import java.util.LinkedList;
 import java.util.Scanner;
 import TADs.linkedlist.MyLinkedListImpl;
 import TADs.linkedlist.MyList;
+import TADs.linkedlist.Node;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
 
     public static MyList<Cancion> leerCanciones() {
+        long startTime = System.nanoTime();
         String csvFile = "src/universal_top_spotify_songs.csv";
         String line = "";
         String csvSplitBy = ",";
@@ -63,6 +65,9 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        long endTime = System.nanoTime();
+        float duration = (float) (endTime - startTime) /1000000000;  // Tiempo en segundos
+        System.out.println("La consulta se demoró: " + duration + " segundos");
         return canciones;
     }
 
@@ -101,9 +106,12 @@ public class Main {
         return cancionesMasTop50;
     }
 
-    public static int cantidadVecesArtistaTop50Fecha(ArrayList<Cancion> canciones, String artista, String fecha) {
+    public static int cantidadVecesArtistaTop50Fecha(MyList<Cancion> canciones, String artista, String fecha) {
         int cantidad = 0;
-        for (Cancion cancion : canciones) {
+        Node<Cancion> actual = canciones.getFirst();
+        while (actual != null){
+            Cancion cancion = actual.getValue();
+            actual = actual.getNext();
             if (cancion.getArtists().contains(artista) && cancion.getSnapshot_date().equals(fecha)) {
                 cantidad++;
             }
@@ -166,7 +174,21 @@ public class Main {
                     // Aquí va la lógica para la opción 3
                     break;
                 case 4:
-                    // Aquí va la lógica para la opción 4
+                    System.out.println("Ingrese el nombre del artista: ");
+                    String artista = sc.nextLine();
+                    artista = artista.trim();
+
+                    System.out.println("Ingrese una fecha (YYYY-MM-DD): ");
+                    String fechaArtista = sc.nextLine();
+                    fechaArtista = fechaArtista.trim();
+
+                    int cantidad = cantidadVecesArtistaTop50Fecha(canciones,artista, fechaArtista);
+                    System.out.print("El artista ");
+                    System.out.print(artista);
+                    System.out.print(" aparece ");
+                    System.out.print(cantidad);
+                    System.out.print(" veces en el top 50 en la fecha ");
+                    System.out.println(fechaArtista);
                     break;
                 case 5:
                     // Aquí va la lógica para la opción 5
