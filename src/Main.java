@@ -20,6 +20,7 @@ public class Main {
     public static MyList<Cancion> leerCanciones() {
         String csvFile = "src/universal_top_spotify_songs.csv";
         String line = "";
+        long startTime = System.nanoTime();
         String csvSplitBy = ",";
         MyList<Cancion> canciones = new MyLinkedListImpl<>();
 
