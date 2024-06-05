@@ -18,7 +18,6 @@ import TADs.linkedlist.Node;
 public class Main {
 
     public static MyList<Cancion> leerCanciones() {
-        long startTime = System.nanoTime();
         String csvFile = "src/universal_top_spotify_songs.csv";
         String line = "";
         String csvSplitBy = ",";
@@ -75,11 +74,14 @@ public class Main {
         MyList<Cancion> cancionesPaisFecha = new MyLinkedListImpl<>();
 
 
-        for (int i = 0; i < canciones.size(); i++) {
-            Cancion cancion = canciones.get(i);
-            if(cancionesPaisFecha.size() == 11) break;
+        Node<Cancion> actual = canciones.getFirst();
+        while(actual != null) {
+            Cancion cancion = actual.getValue();
+            actual = actual.getNext();
 
-            if (cancion.getCountry().equals(pais) && cancion.getSnapshot_date().equals(fecha) && cancion.getDaily_rank() < 10) {
+            if(cancionesPaisFecha.size() == 10) break;
+
+            if (cancion.getCountry().equals(pais) && cancion.getSnapshot_date().equals(fecha) && cancion.getDaily_rank() <= 10) {
                 cancionesPaisFecha.add(cancion);
             }
         }
