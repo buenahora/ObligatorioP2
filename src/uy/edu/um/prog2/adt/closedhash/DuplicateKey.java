@@ -1,4 +1,4 @@
-package uy.edu.um.prog2.adt.closedhash;
+package uy.edu.um.adt.closedhash;
 
 public class DuplicateKey extends Exception {
 }
