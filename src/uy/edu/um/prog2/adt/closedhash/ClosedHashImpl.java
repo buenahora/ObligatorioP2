@@ -1,6 +1,8 @@
-package uy.edu.um.prog2.adt.closedhash;
+package uy.edu.um.adt.closedhash;
 
-public class ClosedHashImpl<K,V> implements ClosedHash<K,V> {
+import uy.edu.um.adt.linkedlist.MyLinkedListImpl;
+
+public class ClosedHashImpl<K,V extends Comparable<V>> implements ClosedHash<K,V> {
     private HashBucket<K, V>[] closedHash;
     private int size;
     private int capacity;
@@ -22,13 +24,12 @@ public class ClosedHashImpl<K,V> implements ClosedHash<K,V> {
         int originalIndex = index;
         int i = 0;
 
-        while (closedHash[index] != null && !closedHash[index].isDeleted() && !closedHash[index].getKey().equals(key)) {
+        while (closedHash[index] != null && !closedHash[index].isDeleted()) {
+            if (closedHash[index].getKey().equals(key)) {
+                throw new DuplicateKey();
+            }
             i++;
             index = (originalIndex + i) % closedHash.length;
-        }
-
-        if (closedHash[index] != null && !closedHash[index].isDeleted() && closedHash[index].getKey().equals(key)) {
-            throw new DuplicateKey();
         }
 
         if (closedHash[index] == null || closedHash[index].isDeleted()) {
@@ -39,8 +40,31 @@ public class ClosedHashImpl<K,V> implements ClosedHash<K,V> {
     }
 
     @Override
+    public void changeValue(K key, V valorNuevo) {
+        if (size != 0) {
+            int index = Math.abs(key.hashCode()) % closedHash.length;
+            int originalIndex = index;
+            int i = 0;
+
+            while (closedHash[index] != null && !closedHash[index].isDeleted()) {
+                if (closedHash[index].getKey().equals(key)) {
+                    closedHash[index].setValue(valorNuevo);
+                    return;
+                }
+                i++;
+                index = (originalIndex + i) % closedHash.length;
+            }
+
+            System.out.println("La clave ingresada no existe.");
+        } else {
+            System.out.println("La tabla está vacía.");
+        }
+    }
+
+
+    @Override
     public V getValue(K key) {
-        int index = key.hashCode() % closedHash.length;
+        int index = Math.abs(key.hashCode()) % closedHash.length;
         int originalIndex = index;
         int i = 0;
 
@@ -80,17 +104,22 @@ public class ClosedHashImpl<K,V> implements ClosedHash<K,V> {
     public int getSize() {
         return size;
     }
-    public void resize() throws DuplicateKey {
+
+    private void resize() throws DuplicateKey {
         HashBucket<K, V>[] oldTable = closedHash;
         closedHash = new HashBucket[oldTable.length * 2];
         size = 0;
 
         for (HashBucket<K, V> cubeta : oldTable) {
             if (cubeta != null && !cubeta.isDeleted()) {
-                insertar(cubeta.getKey(), cubeta.getValue());
+                try {
+                    insertar(cubeta.getKey(), cubeta.getValue());
+                }catch (Exception e) {}
+
             }
         }
     }
+
     public String toString() {
         StringBuilder tempString = new StringBuilder();
         tempString.append("[");

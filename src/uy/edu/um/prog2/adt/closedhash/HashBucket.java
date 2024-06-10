@@ -1,4 +1,4 @@
-package uy.edu.um.prog2.adt.closedhash;
+package uy.edu.um.adt.closedhash;
 
 public class HashBucket<K,V> {
     private K key;
@@ -31,5 +31,9 @@ public class HashBucket<K,V> {
 
     public String toString() {
         return "(" + this.key.toString() + ", " + this.value.toString() + ")";
+    }
+
+    public void setValue(V valorNuevo) {
+        this.value = valorNuevo;
     }
 }
