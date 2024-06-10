@@ -6,6 +6,7 @@ public class ClosedHashImpl<K,V> implements ClosedHash<K,V> {
     private int capacity;
     private static final double load_factor = 0.75;//si la tabla se llena a 75% se duplica su tamaño
 
+
     public ClosedHashImpl(int capacity) {
         closedHash = new HashBucket[capacity];
         size = 0;
@@ -52,6 +53,10 @@ public class ClosedHashImpl<K,V> implements ClosedHash<K,V> {
         }
 
         return null;
+    }
+    public Boolean contains(K key){
+        if (this.getValue(key) == null){return false;}
+        return true;
     }
 
     @Override
