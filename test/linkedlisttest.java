@@ -1,6 +1,6 @@
 package Tests;
-import TADs.linkedlist.MyLinkedListImpl;
-import TADs.linkedlist.MyList;
+import uy.edu.um.prog2.adt.linkedlist.MyLinkedListImpl;
+import uy.edu.um.prog2.adt.linkedlist.MyList;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;

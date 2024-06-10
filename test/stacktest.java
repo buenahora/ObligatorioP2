@@ -1,10 +1,10 @@
 package Tests;
 
 import Classes.Exceptions.StackExceptions.EmptyStackException;
-import TADs.stack.MyStack;
+import uy.edu.um.prog2.adt.stack.MyStack;
 import org.junit.Before;
 import org.junit.Test;
-import TADs.linkedlist.MyLinkedListImpl;
+import uy.edu.um.prog2.adt.linkedlist.MyLinkedListImpl;
 
 import static org.junit.jupiter.api.Assertions.*;
 

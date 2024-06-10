@@ -1,4 +1,4 @@
-package TADs.binarytree;
+package uy.edu.um.prog2.adt.binarytree;
 
 import Classes.Exceptions.BinaryTreeExceptions.DuplicateKeyTreeException;
 

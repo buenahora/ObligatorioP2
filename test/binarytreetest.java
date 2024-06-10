@@ -1,6 +1,6 @@
 package Tests;
 import Classes.Exceptions.BinaryTreeExceptions.DuplicateKeyTreeException;
-import TADs.binarytree.SearchBinaryTreeImpl;
+import uy.edu.um.prog2.adt.binarytree.SearchBinaryTreeImpl;
 
 import org.junit.Before;
 import org.junit.Test;

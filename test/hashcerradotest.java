@@ -1,7 +1,7 @@
 package Tests;
 import Classes.Cancion;
 import Classes.Exceptions.HashExceptions.DuplicateKeyHash;
-import TADs.hashcerrado.HashCerrado;
+import uy.edu.um.prog2.adt.hashcerrado.HashCerrado;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;

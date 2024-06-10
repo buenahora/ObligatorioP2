@@ -1,4 +1,4 @@
-package TADs.stack;
+package uy.edu.um.prog2.adt.stack;
 
 
 import Classes.Exceptions.StackExceptions.EmptyStackException;

@@ -1,4 +1,4 @@
-package TADs.binarytree;
+package uy.edu.um.prog2.adt.binarytree;
 
 import java.util.ArrayList;
 import java.util.List;

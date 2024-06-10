@@ -1,7 +1,7 @@
 package Tests;
 import Classes.Exceptions.QueueExceptions.EmptyQueueException;
-import TADs.linkedlist.MyLinkedListImpl;
-import TADs.queue.MyQueue;
+import uy.edu.um.prog2.adt.linkedlist.MyLinkedListImpl;
+import uy.edu.um.prog2.adt.queue.MyQueue;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

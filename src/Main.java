@@ -2,27 +2,36 @@ import Classes.Cancion;
 
 import java.util.AbstractList;
 import java.util.ArrayList;
-//import java.util.List;
-//import java.util.Objects;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.Scanner;
-import TADs.linkedlist.MyLinkedListImpl;
-import TADs.linkedlist.MyList;
-import TADs.linkedlist.Node;
+
+import Classes.CancionCantidad;
+import uy.edu.um.prog2.adt.closedhash.ClosedHashImpl;
+import uy.edu.um.prog2.adt.closedhash.DuplicateKey;
+
+import uy.edu.um.prog2.adt.linkedlist.MyLinkedListImpl;
+import uy.edu.um.prog2.adt.linkedlist.MyList;
+import uy.edu.um.prog2.adt.linkedlist.Node;
+import uy.edu.um.prog2.adt.maxheap.MiMaxHeap;
+import uy.edu.um.prog2.adt.maxheap.MyHeap;
+import uy.edu.um.prog2.adt.maxheap.MyHeapImpl;
 
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
-
+    static MiMaxHeap<CancionCantidad> cancionesHeap = new MiMaxHeap<>(770000);
+    static ClosedHashImpl<String, Cancion> cancionesHash = new ClosedHashImpl<>(20000);
     public static MyList<Cancion> leerCanciones() {
         String csvFile = "src/universal_top_spotify_songs.csv";
         String line = "";
         long startTime = System.nanoTime();
         String csvSplitBy = ",";
         MyList<Cancion> canciones = new MyLinkedListImpl<>();
+
+
 
         try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
             br.readLine();
@@ -60,9 +69,20 @@ public class Main {
                         Double.parseDouble(data[23]), // tempo
                         Integer.parseInt(data[24]) // time_signature
                 );
+
+                CancionCantidad cancionCantidad = new CancionCantidad(cancion.getSpotify_id(), 0);
+
+
+                String key = cancion.getSnapshot_date()+cancion.getCountry()+cancion.getDaily_rank();
+//                System.out.println(key);
+                cancionesHash.insertar(key, cancion);
+
+                cancionesHeap.insert(cancionCantidad);
                 canciones.add(cancion);
             }
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (DuplicateKey e) {
             e.printStackTrace();
         }
         long endTime = System.nanoTime();
@@ -75,17 +95,22 @@ public class Main {
         MyList<Cancion> cancionesPaisFecha = new MyLinkedListImpl<>();
 
 
-        Node<Cancion> actual = canciones.getFirst();
-        while(actual != null) {
-            Cancion cancion = actual.getValue();
-            actual = actual.getNext();
-
-            if(cancionesPaisFecha.size() == 10) break;
-
-            if (cancion.getCountry().equals(pais) && cancion.getSnapshot_date().equals(fecha) && cancion.getDaily_rank() <= 10) {
-                cancionesPaisFecha.add(cancion);
-            }
+        for (int i = 1; i < 11; i++) {
+            String key = fecha+pais+i;
+            Cancion cancion = cancionesHash.getValue(key);
+            cancionesPaisFecha.add(cancion);
         }
+//        Node<Cancion> actual = canciones.getFirst();
+//        while(actual != null) {
+//            Cancion cancion = actual.getValue();
+//            actual = actual.getNext();
+//
+//            if(cancionesPaisFecha.size() == 10) break;
+//
+//            if (cancion.getCountry().equals(pais) && cancion.getSnapshot_date().equals(fecha) && cancion.getDaily_rank() <= 10) {
+//                cancionesPaisFecha.add(cancion);
+//            }
+//        }
         return cancionesPaisFecha;
     }
 
