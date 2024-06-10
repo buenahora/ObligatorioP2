@@ -1,4 +1,4 @@
-package uy.edu.um.adt.closedhash;
+package uy.edu.um.prog2.adt.closedhash;
 
 public class HashBucket<K,V> {
     private K key;

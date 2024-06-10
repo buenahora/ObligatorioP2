@@ -9,9 +9,9 @@ import java.util.HashMap;
 import java.util.Scanner;
 
 import Classes.CancionCantidad;
+
 import uy.edu.um.prog2.adt.closedhash.ClosedHashImpl;
 import uy.edu.um.prog2.adt.closedhash.DuplicateKey;
-
 import uy.edu.um.prog2.adt.linkedlist.MyLinkedListImpl;
 import uy.edu.um.prog2.adt.linkedlist.MyList;
 import uy.edu.um.prog2.adt.linkedlist.Node;
@@ -22,16 +22,15 @@ import uy.edu.um.prog2.adt.maxheap.MyHeapImpl;
 //TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
-    static MiMaxHeap<CancionCantidad> cancionesHeap = new MiMaxHeap<>(770000);
-    static ClosedHashImpl<String, Cancion> cancionesHash = new ClosedHashImpl<>(20000);
+    static ClosedHashImpl<String, ClosedHashImpl<String, MiMaxHeap<Integer>>> fechasHash = new ClosedHashImpl<>(10000);
+
     public static MyList<Cancion> leerCanciones() {
         String csvFile = "src/universal_top_spotify_songs.csv";
         String line = "";
         long startTime = System.nanoTime();
         String csvSplitBy = ",";
+
         MyList<Cancion> canciones = new MyLinkedListImpl<>();
-
-
 
         try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
             br.readLine();
@@ -70,24 +69,33 @@ public class Main {
                         Integer.parseInt(data[24]) // time_signature
                 );
 
-                CancionCantidad cancionCantidad = new CancionCantidad(cancion.getSpotify_id(), 0);
 
+                ClosedHashImpl<String, MiMaxHeap<Integer>> paisHash = new ClosedHashImpl<>(10000);
 
-                String key = cancion.getSnapshot_date()+cancion.getCountry()+cancion.getDaily_rank();
-//                System.out.println(key);
-                cancionesHash.insertar(key, cancion);
+                if(fechasHash.getValue(cancion.getSnapshot_date()) == null) {
+                    fechasHash.insertar(cancion.getSnapshot_date(), paisHash);
+                }
 
-                cancionesHeap.insert(cancionCantidad);
-                canciones.add(cancion);
+                MiMaxHeap<Integer> topPais = new MiMaxHeap<>(51);
+
+                if(paisHash.getValue(cancion.getCountry()) == null) {
+                    paisHash.insertar(cancion.getCountry(), topPais);
+                }
+
             }
+
+
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (DuplicateKey e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
+
         long endTime = System.nanoTime();
         float duration = (float) (endTime - startTime) /1000000000;  // Tiempo en segundos
         System.out.println("La consulta se demoró: " + duration + " segundos");
+
         return canciones;
     }
 
@@ -97,7 +105,7 @@ public class Main {
 
         for (int i = 1; i < 11; i++) {
             String key = fecha+pais+i;
-            Cancion cancion = cancionesHash.getValue(key);
+            Cancion cancion = fechasHash.getValue(key);
             cancionesPaisFecha.add(cancion);
         }
 //        Node<Cancion> actual = canciones.getFirst();

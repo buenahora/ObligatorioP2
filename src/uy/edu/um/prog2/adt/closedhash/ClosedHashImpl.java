@@ -1,8 +1,6 @@
-package uy.edu.um.adt.closedhash;
+package uy.edu.um.prog2.adt.closedhash;
 
-import uy.edu.um.adt.linkedlist.MyLinkedListImpl;
-
-public class ClosedHashImpl<K,V extends Comparable<V>> implements ClosedHash<K,V> {
+public class ClosedHashImpl<K,V> implements ClosedHash<K,V> {
     private HashBucket<K, V>[] closedHash;
     private int size;
     private int capacity;
@@ -100,7 +98,7 @@ public class ClosedHashImpl<K,V extends Comparable<V>> implements ClosedHash<K,V
         return size;
     }
 
-    private void resize() throws DuplicateKey {
+    public void resize() throws DuplicateKey {
         HashBucket<K, V>[] oldTable = closedHash;
         closedHash = new HashBucket[oldTable.length * 2];
         size = 0;
