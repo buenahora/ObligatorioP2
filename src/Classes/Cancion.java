@@ -2,7 +2,7 @@ package Classes;
 
 import java.util.Objects;
 
-public class Cancion {
+public class Cancion implements Comparable<Cancion> {
     private String spotify_id;
     private String name;
     private String artists;
@@ -166,5 +166,10 @@ public class Cancion {
         this.valence = valence;
         this.tempo = tempo;
         this.time_signature = time_signature;
+    }
+
+    @Override
+    public int compareTo(Cancion o) {
+        return Integer.compare(this.daily_rank, o.daily_rank);
     }
 }

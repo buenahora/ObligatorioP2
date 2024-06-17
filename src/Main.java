@@ -5,10 +5,7 @@ import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Scanner;
-
-import Classes.CancionCantidad;
 
 import uy.edu.um.prog2.adt.closedhash.ClosedHashImpl;
 import uy.edu.um.prog2.adt.closedhash.DuplicateKey;
@@ -16,13 +13,10 @@ import uy.edu.um.prog2.adt.linkedlist.MyLinkedListImpl;
 import uy.edu.um.prog2.adt.linkedlist.MyList;
 import uy.edu.um.prog2.adt.linkedlist.Node;
 import uy.edu.um.prog2.adt.maxheap.MiMaxHeap;
-import uy.edu.um.prog2.adt.maxheap.MyHeap;
-import uy.edu.um.prog2.adt.maxheap.MyHeapImpl;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
-    static ClosedHashImpl<String, ClosedHashImpl<String, MiMaxHeap<Integer>>> fechasHash = new ClosedHashImpl<>(10000);
+    static ClosedHashImpl<String, ClosedHashImpl<String, MiMaxHeap<Cancion>>> hashFechas = new ClosedHashImpl<>(10000);
+
 
     public static MyList<Cancion> leerCanciones() {
         String csvFile = "src/universal_top_spotify_songs.csv";
@@ -34,6 +28,7 @@ public class Main {
 
         try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
             br.readLine();
+            int contador = 1;
             while ((line = br.readLine()) != null) {
                 // use comma as separator
                 String[] data = line.split("(?<=\"),(?=\")", -1);
@@ -70,17 +65,27 @@ public class Main {
                 );
 
 
-                ClosedHashImpl<String, MiMaxHeap<Integer>> paisHash = new ClosedHashImpl<>(10000);
+                ClosedHashImpl<String, MiMaxHeap<Cancion>> paisHash = new ClosedHashImpl<>(10000);
 
-                if(fechasHash.getValue(cancion.getSnapshot_date()) == null) {
-                    fechasHash.insertar(cancion.getSnapshot_date(), paisHash);
+                if(hashFechas.getValue(cancion.getSnapshot_date()) == null) {
+                    hashFechas.insertar(cancion.getSnapshot_date(), paisHash);
                 }
 
-                MiMaxHeap<Integer> topPais = new MiMaxHeap<>(51);
+                MiMaxHeap<Cancion> heapTopFechaPais = new MiMaxHeap<Cancion>(100);
 
-                if(paisHash.getValue(cancion.getCountry()) == null) {
-                    paisHash.insertar(cancion.getCountry(), topPais);
+                if(hashFechas.getValue(cancion.getSnapshot_date()).getValue(cancion.getCountry()) == null) {
+                    hashFechas.getValue(cancion.getSnapshot_date()).insertar(cancion.getCountry(), heapTopFechaPais);
                 }
+
+//                System.out.println(cancion.getSnapshot_date());
+//                System.out.println(cancion.getCountry() + ".");
+//                System.out.println(cancion.getName());
+//                System.out.println(cancion.getDaily_rank());
+
+
+//              Aca salta duplicate key
+//              System.out.println(contador);
+                hashFechas.getValue(cancion.getSnapshot_date()).getValue(cancion.getCountry()).insert(cancion);
 
             }
 
@@ -105,8 +110,6 @@ public class Main {
 
         for (int i = 1; i < 11; i++) {
             String key = fecha+pais+i;
-            Cancion cancion = fechasHash.getValue(key);
-            cancionesPaisFecha.add(cancion);
         }
 //        Node<Cancion> actual = canciones.getFirst();
 //        while(actual != null) {
@@ -119,6 +122,13 @@ public class Main {
 //                cancionesPaisFecha.add(cancion);
 //            }
 //        }
+        MiMaxHeap<Cancion> heapTop50 = hashFechas.getValue(fecha).getValue(pais);
+        MiMaxHeap<Cancion> heapTop50Copia = heapTop50;
+        for (int i = 0; i < 10; i++) {
+            cancionesPaisFecha.add(heapTop50Copia.get());
+            heapTop50.delete();
+        }
+
         return cancionesPaisFecha;
     }
 
