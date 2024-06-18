@@ -1,10 +1,13 @@
 import Classes.Cancion;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Date;
 import java.util.Scanner;
 
 import uy.edu.um.prog2.adt.closedhash.ClosedHashImpl;
@@ -15,9 +18,26 @@ import uy.edu.um.prog2.adt.linkedlist.Node;
 import uy.edu.um.prog2.adt.maxheap.MiMaxHeap;
 
 public class Main {
-    static ClosedHashImpl<String, ClosedHashImpl<String, MiMaxHeap<Cancion>>> hashFechas = new ClosedHashImpl<>(10000);
+    static ClosedHashImpl<String, ClosedHashImpl<String, MyList<Cancion>>> hashFechas = new ClosedHashImpl<>(10000);
 
 
+    public static MyLinkedListImpl<String> splitArtistas(Cancion cancion) {
+        MyLinkedListImpl<String> artistas = new MyLinkedListImpl<>();
+
+        String[] artistasSeparados = cancion.getArtists().split(",");
+        for (String artista : artistasSeparados) {
+            artistas.add(artista);
+        }
+        return artistas;
+    }
+
+    public static boolean isFechaEntre(Date fechaInicio, Date fechaFinal, Date fechaVerificar) {
+        if (fechaVerificar.compareTo(fechaInicio) >= 0) {
+            return fechaVerificar.compareTo(fechaFinal) <= 0;
+        } else {
+            return false;
+        }
+    }
     public static MyList<Cancion> leerCanciones() {
         String csvFile = "src/universal_top_spotify_songs.csv";
         String line = "";
@@ -65,27 +85,19 @@ public class Main {
                 );
 
 
-                ClosedHashImpl<String, MiMaxHeap<Cancion>> paisHash = new ClosedHashImpl<>(10000);
+                ClosedHashImpl<String, MyList<Cancion>> paisHash = new ClosedHashImpl<>(10000);
 
                 if(hashFechas.getValue(cancion.getSnapshot_date()) == null) {
                     hashFechas.insertar(cancion.getSnapshot_date(), paisHash);
                 }
 
-                MiMaxHeap<Cancion> heapTopFechaPais = new MiMaxHeap<Cancion>(100);
+                MyList<Cancion> listaFechaPais = new MyLinkedListImpl<>();
 
                 if(hashFechas.getValue(cancion.getSnapshot_date()).getValue(cancion.getCountry()) == null) {
-                    hashFechas.getValue(cancion.getSnapshot_date()).insertar(cancion.getCountry(), heapTopFechaPais);
+                    hashFechas.getValue(cancion.getSnapshot_date()).insertar(cancion.getCountry(), listaFechaPais);
                 }
 
-//                System.out.println(cancion.getSnapshot_date());
-//                System.out.println(cancion.getCountry() + ".");
-//                System.out.println(cancion.getName());
-//                System.out.println(cancion.getDaily_rank());
-
-
-//              Aca salta duplicate key
-//              System.out.println(contador);
-                hashFechas.getValue(cancion.getSnapshot_date()).getValue(cancion.getCountry()).insert(cancion);
+                hashFechas.getValue(cancion.getSnapshot_date()).getValue(cancion.getCountry()).add(cancion);
 
             }
 
@@ -104,52 +116,98 @@ public class Main {
         return canciones;
     }
 
-    public static MyList<Cancion> top10CancionesPaisFecha(MyList<Cancion> canciones, String pais, String fecha) {
+    public static MyList<Cancion> top10CancionesPaisFecha(String pais, String fecha) {
         MyList<Cancion> cancionesPaisFecha = new MyLinkedListImpl<>();
 
+        //2023-07-28
+        MyList<Cancion> listaTop50 = hashFechas.getValue(fecha).getValue(pais);
 
-        for (int i = 1; i < 11; i++) {
-            String key = fecha+pais+i;
-        }
-//        Node<Cancion> actual = canciones.getFirst();
-//        while(actual != null) {
-//            Cancion cancion = actual.getValue();
-//            actual = actual.getNext();
-//
-//            if(cancionesPaisFecha.size() == 10) break;
-//
-//            if (cancion.getCountry().equals(pais) && cancion.getSnapshot_date().equals(fecha) && cancion.getDaily_rank() <= 10) {
-//                cancionesPaisFecha.add(cancion);
-//            }
-//        }
-        MiMaxHeap<Cancion> heapTop50 = hashFechas.getValue(fecha).getValue(pais);
-        MiMaxHeap<Cancion> heapTop50Copia = heapTop50;
         for (int i = 0; i < 10; i++) {
-            cancionesPaisFecha.add(heapTop50Copia.get());
-            heapTop50.delete();
+            cancionesPaisFecha.add(listaTop50.get(i));
         }
 
         return cancionesPaisFecha;
     }
 
-    public static AbstractList<Cancion> top5CancionesMasTop50Fecha(ArrayList<Cancion> canciones, String fecha) {
-        ArrayList<Cancion> cancionesMasTop50 = new ArrayList<>();
-        for (Cancion cancion : canciones) {
-            if (cancion.getSnapshot_date().equals(fecha)) {
-                cancionesMasTop50.add(cancion);
+    public static MyList<Cancion> top5CancionesMasTop50Fecha(String fecha) throws ParseException, DuplicateKey {
+        MyList<Cancion> cancionesMasTop50 = new MyLinkedListImpl<>();
+
+        ClosedHashImpl<String, MyList<Cancion>> hashFechadada = hashFechas.getValue(fecha);
+        MyList<String> keys = hashFechadada.getKeys();
+
+        ClosedHashImpl<String,Cancion> hashContador = new ClosedHashImpl<>(1000000);
+
+        // CONTAR LAS OCURRENCIAS DE UNA CANCION EN TODOS LOS PAISES DE UN DIA
+        int sizeKeys = keys.size();
+        for (int i =0; i<sizeKeys;i++){
+            MyList<Cancion> listacanciones = hashFechadada.getValue(keys.get(i));
+            int sizeListaCanciones = listacanciones.size();
+            for(int j = 0; j<sizeListaCanciones;j++){
+                Cancion cancion = listacanciones.get(j);
+                if(!hashContador.contains(cancion.getSpotify_id())){
+                    hashContador.insertar(cancion.getSpotify_id(),cancion);
+                }else {
+                    hashContador.getValue(cancion.getSpotify_id()).aumentarcontador();
+                }
             }
         }
         return cancionesMasTop50;
     }
 
-    public static AbstractList<Cancion> top7ArtistasMasTop50Fecha(ArrayList<Cancion> canciones, String fechaInicio, String fechaFin) {
-        ArrayList<Cancion> cancionesMasTop50 = new ArrayList<>();
-        for (Cancion cancion : canciones) {
-            if (cancion.getSnapshot_date().equals(fechaInicio) || cancion.getSnapshot_date().equals(fechaFin)) {
-                cancionesMasTop50.add(cancion);
+    public static MyLinkedListImpl<String> top7ArtistasMasTop50Fecha(String inicio, String fin) throws ParseException {
+        MyLinkedListImpl<String> artistasMasTop7 = new MyLinkedListImpl<>();
+
+        MyList<String> fechasKeys = hashFechas.getKeys();
+        MyList<String> paisesKeys = hashFechas.getValue(fechasKeys.get(0)).getKeys();
+
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        sdf.setLenient(false);
+
+        Date fechaInicio = sdf.parse(inicio);
+        Date fechaFin = sdf.parse(fin);
+
+
+        for (int i = 0; i < fechasKeys.size(); i++) {
+
+//            System.out.println("I es "+i);
+            for (int j = 0; j < paisesKeys.size(); j++) {
+//                System.out.println("J es "+j);
+                String fecha = fechasKeys.get(i);
+                String pais = paisesKeys.get(j);
+
+
+                ClosedHashImpl hashPaises = hashFechas.getValue(fecha);
+
+//                for (int k = 0; k < hashPaises.getKeys().size(); k++) {
+//                    MyList keys = hashPaises.getKeys();
+//                    System.out.println(keys.get(k) + " , ");
+//
+//                }
+
+                MyList<Cancion> cancionesPais = hashFechas.getValue(fecha).getValue(pais);
+
+                if(cancionesPais == null) {
+                    continue;
+                }
+
+                for (int k = 0; k < cancionesPais.size(); k++) {
+                    Cancion cancion = cancionesPais.get(k);
+                    Date fechaCancion = sdf.parse(cancion.getSnapshot_date());
+
+                    if(isFechaEntre(fechaInicio, fechaFin, fechaCancion)) {
+
+                        MyLinkedListImpl<String> artistas = splitArtistas(cancion);
+//                        Implementar un hash y una funcion que me permita agregarle 1 a cada contador
+//                        Ver si me conviene tener el hash ordenado o no
+
+                    }
+
+                }
             }
         }
-        return cancionesMasTop50;
+
+        return artistasMasTop7;
     }
 
     public static int cantidadVecesArtistaTop50Fecha(MyList<Cancion> canciones, String artista, String fecha) {
@@ -175,7 +233,7 @@ public class Main {
         return cantidad;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws DuplicateKey, ParseException {
         MyList<Cancion> canciones = leerCanciones();
         Scanner sc = new Scanner(System.in);
         int option;
@@ -201,23 +259,50 @@ public class Main {
                     String fecha = sc.nextLine();
                     fecha = fecha.trim();
 
-                    MyList<Cancion> cancionesPaisFecha = top10CancionesPaisFecha(canciones, pais, fecha);
+                    MyList<Cancion> cancionesPaisFecha = top10CancionesPaisFecha(pais, fecha);
 
                     if(cancionesPaisFecha.isEmpty()) {
                         System.out.println("No se encontraron canciones para el país y fecha ingresados.");
                         break;
                     }
 
+
                     for (int i = 0; i < cancionesPaisFecha.size(); i++) {
                         System.out.println((i + 1) + ". " + cancionesPaisFecha.get(i).getName() + " (" + cancionesPaisFecha.get(i).getArtists() + ")");
                     }
-                    System.out.println();
                     break;
+
                 case 2:
-                    // Aquí va la lógica para la opción 2
+                    System.out.println("Ingrese una fecha (YYYY-MM-DD): ");
+                    String fecha2 = sc.nextLine();
+                    fecha2 = fecha2.trim();
+
+                    ClosedHashImpl<String, MyList<Cancion>> hashFechadada = hashFechas.getValue(fecha2);
+                    MyList<String> keys = hashFechadada.getKeys();
+
+                    ClosedHashImpl<String,Cancion> hashContador = new ClosedHashImpl<>(1000000);
+
+                    MyList<Cancion> cancionesMasTop50 = top5CancionesMasTop50Fecha(fecha2);
+
+                    for(int i = 0; i < 5;i++) {
+                        Cancion cancion = cancionesMasTop50.get(i);
+                        System.out.println((i + 1) + "- " + cancion.getName() +" aparece "+ cancion.getContador() + " veces");
+                    }
                     break;
                 case 3:
-                    // Aquí va la lógica para la opción 3
+//                    System.out.println("Ingrese una fecha inicial (YYYY-MM-DD): ");
+//                    String fechaInicial = sc.nextLine();
+//
+//                    System.out.println("Ingrese una fecha final (YYYY-MM-DD): ");
+//                    String fechaFinal = sc.nextLine();
+
+                    MyLinkedListImpl<String> cancionesTop7Artistas = top7ArtistasMasTop50Fecha("2024-04-04", "2024-05-13");
+
+                    for (int i = 0; i < cancionesTop7Artistas.size(); i++) {
+                        System.out.println(i+"- "+cancionesTop7Artistas.get(i));
+                    }
+
+
                     break;
                 case 4:
                     System.out.println("Ingrese el nombre del artista: ");
@@ -229,12 +314,15 @@ public class Main {
                     fechaArtista = fechaArtista.trim();
 
                     int cantidad = cantidadVecesArtistaTop50Fecha(canciones,artista, fechaArtista);
-                    System.out.print("El artista ");
-                    System.out.print(artista);
-                    System.out.print(" aparece ");
-                    System.out.print(cantidad);
-                    System.out.print(" veces en el top 50 en la fecha ");
-                    System.out.println(fechaArtista);
+
+                    System.out.println("El artista " + artista + " aparece " + cantidad + " veces en el top 50 en la fecha " + fechaArtista + ".");
+
+//                    System.out.print("El artista ");
+//                    System.out.print(artista);
+//                    System.out.print(" aparece ");
+//                    System.out.print(cantidad);
+//                    System.out.print(" veces en el top 50 en la fecha ");
+//                    System.out.println(fechaArtista);
                     break;
                 case 5:
                     // Aquí va la lógica para la opción 5

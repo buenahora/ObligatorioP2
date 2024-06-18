@@ -1,11 +1,19 @@
 package uy.edu.um.prog2.adt.closedhash;
 
+import uy.edu.um.prog2.adt.linkedlist.MyLinkedListImpl;
+import uy.edu.um.prog2.adt.linkedlist.MyList;
+
 public class ClosedHashImpl<K,V> implements ClosedHash<K,V> {
     private HashBucket<K, V>[] closedHash;
     private int size;
     private int capacity;
     private static final double load_factor = 0.75;//si la tabla se llena a 75% se duplica su tamaño
 
+    private final MyList<K> keys = new MyLinkedListImpl<>();
+
+    public MyList<K> getKeys() {
+        return keys;
+    }
 
     public ClosedHashImpl(int capacity) {
         closedHash = new HashBucket[capacity];
@@ -35,6 +43,7 @@ public class ClosedHashImpl<K,V> implements ClosedHash<K,V> {
         }
 
         closedHash[index] = new HashBucket<>(key, valor);
+        keys.add(key);
     }
 
     @Override

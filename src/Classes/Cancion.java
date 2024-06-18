@@ -28,6 +28,11 @@ public class Cancion implements Comparable<Cancion> {
     private double valence;
     private double tempo;
     private int time_signature;
+    private int contador = 1;
+
+    public int getContador() {
+        return contador;
+    }
 
     public String getSpotify_id() {
         return spotify_id;
@@ -168,8 +173,19 @@ public class Cancion implements Comparable<Cancion> {
         this.time_signature = time_signature;
     }
 
+    public void aumentarcontador() {
+        contador++;
+    }
+
     @Override
     public int compareTo(Cancion o) {
-        return Integer.compare(this.daily_rank, o.daily_rank);
+        return Integer.compare(this.contador, o.getContador());
+    }
+
+    @Override
+    public String toString() {
+        return "spotify_id='" + spotify_id + '\'' +
+                ", name='" + name + '\'' +
+                ", contador=" + contador;
     }
 }
