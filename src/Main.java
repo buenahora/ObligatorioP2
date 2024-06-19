@@ -2,7 +2,6 @@ import Classes.Cancion;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.AbstractList;
 import java.util.ArrayList;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -10,6 +9,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Scanner;
 
+import Classes.ArtistaCantidad;
 import uy.edu.um.prog2.adt.closedhash.ClosedHashImpl;
 import uy.edu.um.prog2.adt.closedhash.DuplicateKey;
 import uy.edu.um.prog2.adt.linkedlist.MyLinkedListImpl;
@@ -42,15 +42,13 @@ public class Main {
         String csvFile = "src/universal_top_spotify_songs.csv";
         String line = "";
         long startTime = System.nanoTime();
-        String csvSplitBy = ",";
 
         MyList<Cancion> canciones = new MyLinkedListImpl<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
             br.readLine();
-            int contador = 1;
             while ((line = br.readLine()) != null) {
-                // use comma as separator
+
                 String[] data = line.split("(?<=\"),(?=\")", -1);
                 for (int i = 0; i < data.length; i++) {
                     data[i] = data[i].substring(1, data[i].length() - 1);
@@ -84,34 +82,31 @@ public class Main {
                         Integer.parseInt(data[24]) // time_signature
                 );
 
+                ClosedHashImpl<String, MyList<Cancion>> paisHash;
+                MyList<Cancion> listaFechaPais;
 
-                ClosedHashImpl<String, MyList<Cancion>> paisHash = new ClosedHashImpl<>(10000);
-
-                if(hashFechas.getValue(cancion.getSnapshot_date()) == null) {
+                paisHash = hashFechas.getValue(cancion.getSnapshot_date());
+                if (paisHash == null) {
+                    paisHash = new ClosedHashImpl<>(10000);
                     hashFechas.insertar(cancion.getSnapshot_date(), paisHash);
                 }
 
-                MyList<Cancion> listaFechaPais = new MyLinkedListImpl<>();
-
-                if(hashFechas.getValue(cancion.getSnapshot_date()).getValue(cancion.getCountry()) == null) {
-                    hashFechas.getValue(cancion.getSnapshot_date()).insertar(cancion.getCountry(), listaFechaPais);
+                listaFechaPais = paisHash.getValue(cancion.getCountry());
+                if (listaFechaPais == null) {
+                    listaFechaPais = new MyLinkedListImpl<>();
+                    paisHash.insertar(cancion.getCountry(), listaFechaPais);
                 }
 
-                hashFechas.getValue(cancion.getSnapshot_date()).getValue(cancion.getCountry()).add(cancion);
-
+                listaFechaPais.add(cancion);
             }
-
-
-
-        } catch (IOException e) {
+        } catch (IOException | DuplicateKey e) {
             e.printStackTrace();
-        } catch (DuplicateKey e) {
             throw new RuntimeException(e);
         }
 
         long endTime = System.nanoTime();
-        float duration = (float) (endTime - startTime) /1000000000;  // Tiempo en segundos
-        System.out.println("La consulta se demoró: " + duration + " segundos");
+        float duration = (float) (endTime - startTime) / 1000000000;  // Time in seconds
+        System.out.println("La lectura se demoró: " + duration + " segundos");
 
         return canciones;
     }
@@ -151,11 +146,30 @@ public class Main {
                 }
             }
         }
+
+        // METEMOS TODAS LAS CANCIONES EN UN MAXHASH
+        int sizeHashContador = hashContador.getSize();
+        MyList<String> keyscontador = hashContador.getKeys();
+        MiMaxHeap<Cancion> heapCanciones = new MiMaxHeap<>(sizeHashContador);
+        for (int i = 0; i < sizeHashContador;i++){
+            heapCanciones.insert(hashContador.getValue(keyscontador.get(i)));
+        }
+        for(int i = 0; i < 5;i++){
+            cancionesMasTop50.add(heapCanciones.delete());
+        }
+
         return cancionesMasTop50;
     }
 
-    public static MyLinkedListImpl<String> top7ArtistasMasTop50Fecha(String inicio, String fin) throws ParseException {
-        MyLinkedListImpl<String> artistasMasTop7 = new MyLinkedListImpl<>();
+    public static MyLinkedListImpl<ArtistaCantidad> top7ArtistasMasTop50Fecha(String inicio, String fin) throws ParseException, DuplicateKey {
+        MyLinkedListImpl<ArtistaCantidad> artistasMasTop7 = new MyLinkedListImpl<>();
+
+        for (int i = 0; i < 7; i++) {
+            ArtistaCantidad test = new ArtistaCantidad("artista"+i, 0);
+            artistasMasTop7.add(test);
+        }
+
+        ClosedHashImpl<String, Integer> contadorArtistas = new ClosedHashImpl<>(10000);
 
         MyList<String> fechasKeys = hashFechas.getKeys();
         MyList<String> paisesKeys = hashFechas.getValue(fechasKeys.get(0)).getKeys();
@@ -179,17 +193,13 @@ public class Main {
 
                 ClosedHashImpl hashPaises = hashFechas.getValue(fecha);
 
-//                for (int k = 0; k < hashPaises.getKeys().size(); k++) {
-//                    MyList keys = hashPaises.getKeys();
-//                    System.out.println(keys.get(k) + " , ");
-//
-//                }
-
                 MyList<Cancion> cancionesPais = hashFechas.getValue(fecha).getValue(pais);
 
                 if(cancionesPais == null) {
                     continue;
                 }
+
+
 
                 for (int k = 0; k < cancionesPais.size(); k++) {
                     Cancion cancion = cancionesPais.get(k);
@@ -198,29 +208,54 @@ public class Main {
                     if(isFechaEntre(fechaInicio, fechaFin, fechaCancion)) {
 
                         MyLinkedListImpl<String> artistas = splitArtistas(cancion);
-//                        Implementar un hash y una funcion que me permita agregarle 1 a cada contador
-//                        Ver si me conviene tener el hash ordenado o no
+
+                        for (int l = 0; l < artistas.size(); l++) {
+                            String artista = artistas.get(l).trim();
+                            if(contadorArtistas.contains(artista)) {
+
+                                int valorNuevo = contadorArtistas.getValue(artista) + 1;
+
+                                contadorArtistas.changeValue(artista, valorNuevo);
+
+                            } else {
+                                contadorArtistas.insertar(artista, 1);
+                            }
+                        }
 
                     }
 
                 }
+
             }
         }
 
+
+
+        MyList<String> keys = contadorArtistas.getKeys();
+
+        for (int i = 0; i < keys.size(); i++) {
+            String artista = keys.get(i);
+            int cantidad = contadorArtistas.getValue(artista);
+            ArtistaCantidad artistaCantidad = new ArtistaCantidad(artista, cantidad);
+
+            for (int j = 0; j < artistasMasTop7.size(); j++) {
+                if (artistasMasTop7.isEmpty()) {
+                    artistasMasTop7.add(artistaCantidad);
+                    break;
+                } else if (cantidad > artistasMasTop7.get(j).cantidad) {
+                    artistasMasTop7.remove(artistasMasTop7.get(j));
+                    artistasMasTop7.add(artistaCantidad);
+                    break;
+                }
+            }
+        }
+
+        artistasMasTop7.sort();
         return artistasMasTop7;
     }
 
-    public static int cantidadVecesArtistaTop50Fecha(MyList<Cancion> canciones, String artista, String fecha) {
-        int cantidad = 0;
-        Node<Cancion> actual = canciones.getFirst();
-        while (actual != null){
-            Cancion cancion = actual.getValue();
-            actual = actual.getNext();
-            if (cancion.getArtists().contains(artista) && cancion.getSnapshot_date().equals(fecha)) {
-                cantidad++;
-            }
-        }
-        return cantidad;
+    public static int cantidadVecesArtistaTop50Fecha(String artista, String fecha) {
+        return 1;
     }
 
     public static int cantidadCancionesTempoRangoFecha(ArrayList<Cancion> canciones, double tempoMin, double tempoMax, String fechaInicio, String fechaFin) {
@@ -234,7 +269,7 @@ public class Main {
     }
 
     public static void main(String[] args) throws DuplicateKey, ParseException {
-        MyList<Cancion> canciones = leerCanciones();
+        leerCanciones();
         Scanner sc = new Scanner(System.in);
         int option;
 
@@ -266,28 +301,27 @@ public class Main {
                         break;
                     }
 
-
+                    System.out.println("El top 10 de canciones en el pais dado en la fecha dada es: ");
                     for (int i = 0; i < cancionesPaisFecha.size(); i++) {
                         System.out.println((i + 1) + ". " + cancionesPaisFecha.get(i).getName() + " (" + cancionesPaisFecha.get(i).getArtists() + ")");
                     }
+
+                    System.out.println();
                     break;
 
                 case 2:
                     System.out.println("Ingrese una fecha (YYYY-MM-DD): ");
                     String fecha2 = sc.nextLine();
-                    fecha2 = fecha2.trim();
+                    MyList<Cancion> cancionesTop5 = top5CancionesMasTop50Fecha(fecha2);
 
-                    ClosedHashImpl<String, MyList<Cancion>> hashFechadada = hashFechas.getValue(fecha2);
-                    MyList<String> keys = hashFechadada.getKeys();
 
-                    ClosedHashImpl<String,Cancion> hashContador = new ClosedHashImpl<>(1000000);
+                    System.out.println("El top 5 de canciones que aparecen en mas top 50 es: ");
+                    for (int i = 0; i < cancionesTop5.size(); i++) {
+                        Cancion cancionActual = cancionesTop5.get(i);
 
-                    MyList<Cancion> cancionesMasTop50 = top5CancionesMasTop50Fecha(fecha2);
-
-                    for(int i = 0; i < 5;i++) {
-                        Cancion cancion = cancionesMasTop50.get(i);
-                        System.out.println((i + 1) + "- " + cancion.getName() +" aparece "+ cancion.getContador() + " veces");
+                        System.out.println((i + 1) + ". " + cancionActual.getName() + " aparece " + cancionActual.getContador() +" veces");
                     }
+
                     break;
                 case 3:
 //                    System.out.println("Ingrese una fecha inicial (YYYY-MM-DD): ");
@@ -296,12 +330,13 @@ public class Main {
 //                    System.out.println("Ingrese una fecha final (YYYY-MM-DD): ");
 //                    String fechaFinal = sc.nextLine();
 
-                    MyLinkedListImpl<String> cancionesTop7Artistas = top7ArtistasMasTop50Fecha("2024-04-04", "2024-05-13");
+                    MyLinkedListImpl<ArtistaCantidad> cancionesTop7Artistas = top7ArtistasMasTop50Fecha("2023-08-11", "2024-05-13");
 
+                    System.out.println("El top 7 artistas que mas aparece en el top 50 en el rango de fechas dado es: ");
                     for (int i = 0; i < cancionesTop7Artistas.size(); i++) {
-                        System.out.println(i+"- "+cancionesTop7Artistas.get(i));
+                        System.out.println((i+1) +" - "+cancionesTop7Artistas.get(i).artista+" aparece "+cancionesTop7Artistas.get(i).cantidad+" veces");
                     }
-
+                    System.out.println();
 
                     break;
                 case 4:
@@ -313,7 +348,7 @@ public class Main {
                     String fechaArtista = sc.nextLine();
                     fechaArtista = fechaArtista.trim();
 
-                    int cantidad = cantidadVecesArtistaTop50Fecha(canciones,artista, fechaArtista);
+                    int cantidad = cantidadVecesArtistaTop50Fecha(artista, fechaArtista);
 
                     System.out.println("El artista " + artista + " aparece " + cantidad + " veces en el top 50 en la fecha " + fechaArtista + ".");
 
@@ -323,6 +358,7 @@ public class Main {
 //                    System.out.print(cantidad);
 //                    System.out.print(" veces en el top 50 en la fecha ");
 //                    System.out.println(fechaArtista);
+                    System.out.println();
                     break;
                 case 5:
                     // Aquí va la lógica para la opción 5
@@ -331,6 +367,7 @@ public class Main {
                     break;
                 default:
                     System.out.println("Opción no válida. Por favor, intente de nuevo.");
+                    System.out.println();
                     break;
             }
         } while (option != 0);

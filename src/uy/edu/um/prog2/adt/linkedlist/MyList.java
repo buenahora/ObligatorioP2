@@ -15,4 +15,6 @@ public interface MyList<T> {
     Node<T> getFirst();
 
     boolean isEmpty();
+
+    void sort();
 }

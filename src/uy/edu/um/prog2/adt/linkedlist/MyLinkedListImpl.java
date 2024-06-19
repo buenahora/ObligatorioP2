@@ -5,7 +5,7 @@ import Classes.Exceptions.StackExceptions.EmptyStackException;
 import uy.edu.um.prog2.adt.queue.MyQueue;
 import uy.edu.um.prog2.adt.stack.MyStack;
 
-public class MyLinkedListImpl<T> implements MyList<T>, MyQueue<T>, MyStack<T> {
+public class MyLinkedListImpl<T extends Comparable<T> > implements MyList<T>, MyQueue<T>, MyStack<T> {
 
     private Node<T> first;
 
@@ -116,6 +116,54 @@ public class MyLinkedListImpl<T> implements MyList<T>, MyQueue<T>, MyStack<T> {
         return contains;
     }
 
+    public void sort() {
+        if (size() <= 1) {
+            return; // Already sorted
+        }
+        quickSort(0, size() - 1);
+    }
+
+    private void quickSort(int low, int high) {
+        if (low < high) {
+            // pi is partitioning index, arr[pi] is now at right place
+            int pi = partition(low, high);
+
+            // Recursively sort elements before partition and after partition
+            quickSort(low, pi - 1);
+            quickSort(pi + 1, high);
+        }
+    }
+
+    private int partition(int low, int high) {
+        T pivot = get(high);
+        int i = (low - 1); // index of smaller element
+        for (int j = low; j < high; j++) {
+            // If current element is smaller than or equal to pivot
+            if (get(j).compareTo(pivot) <= 0) {
+                i++;
+
+                // swap arr[i] and arr[j]
+                T temp = get(i);
+                set(i, get(j));
+                set(j, temp);
+            }
+        }
+
+        // swap arr[i+1] and arr[high] (or pivot)
+        T temp = get(i + 1);
+        set(i + 1, get(high));
+        set(high, temp);
+
+        return i + 1;
+    }
+
+    private void set(int index, T value) {
+        Node<T> current = first;
+        for (int i = 0; i < index; i++) {
+            current = current.getNext();
+        }
+        current.setValue(value);
+    }
     public void remove(T value) {
         Node<T> beforeSearchValue = null;
         Node<T> searchValue = this.first;

@@ -3,30 +3,31 @@ package uy.edu.um.prog2.adt.closedhash;
 import uy.edu.um.prog2.adt.linkedlist.MyLinkedListImpl;
 import uy.edu.um.prog2.adt.linkedlist.MyList;
 
-public class ClosedHashImpl<K,V> implements ClosedHash<K,V> {
+public class ClosedHashImpl<K extends Comparable<K>, V> implements ClosedHash<K, V> {
     private HashBucket<K, V>[] closedHash;
     private int size;
     private int capacity;
-    private static final double load_factor = 0.75;//si la tabla se llena a 75% se duplica su tamaño
-
+    private static final double LOAD_FACTOR = 0.75; // resize when 75% full
     private final MyList<K> keys = new MyLinkedListImpl<>();
 
     public MyList<K> getKeys() {
         return keys;
     }
 
-    public ClosedHashImpl(int capacity) {
-        closedHash = new HashBucket[capacity];
-        size = 0;
+    @SuppressWarnings("unchecked")
+    public ClosedHashImpl(int initialCapacity) {
+        this.capacity = initialCapacity;
+        this.closedHash = new HashBucket[initialCapacity];
+        this.size = 0;
     }
 
     @Override
     public void insertar(K key, V valor) throws DuplicateKey {
-        if (size >= load_factor * closedHash.length) {
+        if (size >= LOAD_FACTOR * capacity) {
             resize();
         }
 
-        int index = Math.abs(key.hashCode()) % closedHash.length;
+        int index = getIndex(key);
         int originalIndex = index;
         int i = 0;
 
@@ -35,7 +36,7 @@ public class ClosedHashImpl<K,V> implements ClosedHash<K,V> {
                 throw new DuplicateKey();
             }
             i++;
-            index = (originalIndex + i) % closedHash.length;
+            index = (originalIndex + i) % capacity;
         }
 
         if (closedHash[index] == null || closedHash[index].isDeleted()) {
@@ -48,30 +49,30 @@ public class ClosedHashImpl<K,V> implements ClosedHash<K,V> {
 
     @Override
     public void changeValue(K key, V valorNuevo) {
-        if (size != 0) {
-            int index = Math.abs(key.hashCode()) % closedHash.length;
-            int originalIndex = index;
-            int i = 0;
-
-            while (closedHash[index] != null && !closedHash[index].isDeleted()) {
-                if (closedHash[index].getKey().equals(key)) {
-                    closedHash[index].setValue(valorNuevo);
-                    return;
-                }
-                i++;
-                index = (originalIndex + i) % closedHash.length;
-            }
-
-            System.out.println("La clave ingresada no existe.");
-        } else {
+        if (size == 0) {
             System.out.println("La tabla está vacía.");
+            return;
         }
-    }
 
+        int index = getIndex(key);
+        int originalIndex = index;
+        int i = 0;
+
+        while (closedHash[index] != null && !closedHash[index].isDeleted()) {
+            if (closedHash[index].getKey().equals(key)) {
+                closedHash[index].setValue(valorNuevo);
+                return;
+            }
+            i++;
+            index = (originalIndex + i) % capacity;
+        }
+
+        System.out.println("La clave ingresada no existe.");
+    }
 
     @Override
     public V getValue(K key) {
-        int index = Math.abs(key.hashCode()) % closedHash.length;
+        int index = getIndex(key);
         int originalIndex = index;
         int i = 0;
 
@@ -80,19 +81,19 @@ public class ClosedHashImpl<K,V> implements ClosedHash<K,V> {
                 return closedHash[index].getValue();
             }
             i++;
-            index = (originalIndex + i) % closedHash.length;
+            index = (originalIndex + i) % capacity;
         }
 
         return null;
     }
-    public Boolean contains(K key){
-        if (this.getValue(key) == null){return false;}
-        return true;
+
+    public Boolean contains(K key) {
+        return getValue(key) != null;
     }
 
     @Override
     public void delete(K key) {
-        int index = key.hashCode() % closedHash.length;
+        int index = getIndex(key);
         int originalIndex = index;
         int i = 0;
 
@@ -103,7 +104,7 @@ public class ClosedHashImpl<K,V> implements ClosedHash<K,V> {
                 return;
             }
             i++;
-            index = (originalIndex + i) % closedHash.length;
+            index = (originalIndex + i) % capacity;
         }
     }
 
@@ -114,36 +115,32 @@ public class ClosedHashImpl<K,V> implements ClosedHash<K,V> {
 
     public void resize() throws DuplicateKey {
         HashBucket<K, V>[] oldTable = closedHash;
-        closedHash = new HashBucket[oldTable.length * 2];
+        capacity *= 2;
+        closedHash = new HashBucket[capacity];
         size = 0;
 
-        for (HashBucket<K, V> cubeta : oldTable) {
-            if (cubeta != null && !cubeta.isDeleted()) {
-                try {
-                    insertar(cubeta.getKey(), cubeta.getValue());
-                }catch (Exception e) {}
-
+        for (HashBucket<K, V> bucket : oldTable) {
+            if (bucket != null && !bucket.isDeleted()) {
+                insertar(bucket.getKey(), bucket.getValue());
             }
         }
     }
 
+    private int getIndex(K key) {
+        return Math.abs(key.hashCode()) % capacity;
+    }
+
+    @Override
     public String toString() {
-        StringBuilder tempString = new StringBuilder();
-        tempString.append("[");
-        for(int i = 0;i<closedHash.length;i++) {
-            if(i == closedHash.length-1) {
-                if(closedHash[i] == null || closedHash[i].isDeleted()) {//closedHash[i].isDeleted(): las tumbas son impresas como valor null (las tumbas son valores borrados, pero no pueden ser eliminados del hash por la naturaleza del metodo de insercion)
-                    tempString.append("null");
-                } else {
-                    tempString.append(closedHash[i].toString());
-                }
+        StringBuilder tempString = new StringBuilder("[");
+        for (int i = 0; i < closedHash.length; i++) {
+            if (i > 0) {
+                tempString.append(", ");
+            }
+            if (closedHash[i] == null || closedHash[i].isDeleted()) {
+                tempString.append("null");
             } else {
-                if(closedHash[i] == null || closedHash[i].isDeleted()) {//idem a lo de arriba
-                    tempString.append("null, ");
-                } else {
-                    tempString.append(closedHash[i].toString());
-                    tempString.append(", ");
-                }
+                tempString.append(closedHash[i].toString());
             }
         }
         tempString.append("]");

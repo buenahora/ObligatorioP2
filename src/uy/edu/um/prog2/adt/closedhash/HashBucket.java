@@ -1,10 +1,8 @@
 package uy.edu.um.prog2.adt.closedhash;
 
-public class HashBucket<K,V> {
+class HashBucket<K, V> {
     private K key;
-
     private V value;
-
     private boolean deleted;
 
     public HashBucket(K key, V value) {
@@ -14,11 +12,15 @@ public class HashBucket<K,V> {
     }
 
     public K getKey() {
-        return this.key;
+        return key;
     }
 
     public V getValue() {
-        return this.value;
+        return value;
+    }
+
+    public void setValue(V value) {
+        this.value = value;
     }
 
     public boolean isDeleted() {
@@ -26,14 +28,11 @@ public class HashBucket<K,V> {
     }
 
     public void delete() {
-        deleted = true;
+        this.deleted = true;
     }
 
+    @Override
     public String toString() {
-        return "(" + this.key.toString() + ", " + this.value.toString() + ")";
-    }
-
-    public void setValue(V valorNuevo) {
-        this.value = valorNuevo;
+        return key + "=" + value;
     }
 }

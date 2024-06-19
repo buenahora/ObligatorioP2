@@ -6,7 +6,7 @@ public class MyHeapImpl<T extends Comparable<T>> implements MyHeap<T> {
 
 	private int size; // Number of elements in heap
 	private T[] heap; // The heap array
-    private boolean isHeapMin = true;
+    private boolean isHeapMin = false;
 
 	public MyHeapImpl() {
 	    this(true);
