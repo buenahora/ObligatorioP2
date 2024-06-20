@@ -251,7 +251,31 @@ public class Main {
     }
 
     public static int cantidadVecesArtistaTop50Fecha(String artista, String fecha) {
-        return 1;
+        int cantidad = 0;
+
+        MyList<String> keysPaises = hashFechas.getValue(fecha).getKeys();
+
+        for (int k = 0; k < keysPaises.size(); k++) {
+            String pais = keysPaises.get(k);
+            MyList<Cancion> listaCanciones = hashFechas.getValue(fecha).getValue(pais);
+            int cantidadCanciones = listaCanciones.size();
+
+            for(int i=0; i<cantidadCanciones;i++){
+                Cancion cancion = listaCanciones.get(i);
+                MyList<String> listaArtistas = splitArtistas(cancion);
+
+                for (int j = 0; j< listaArtistas.size();j++){
+
+                    if(listaArtistas.get(j).equals(artista)){
+                        cantidad++;
+                    }
+
+                }
+            }
+        }
+
+
+        return cantidad;
     }
 
     public static int cantidadCancionesTempoRangoFecha(int tempoMin, int tempoMax, String inicio, String fin) throws ParseException {
@@ -361,13 +385,13 @@ public class Main {
                     System.out.println();
                     break;
                 case 3:
-//                    System.out.println("Ingrese una fecha inicial (YYYY-MM-DD): ");
-//                    String fechaInicial = sc.nextLine();
-//
-//                    System.out.println("Ingrese una fecha final (YYYY-MM-DD): ");
-//                    String fechaFinal = sc.nextLine();
+                    System.out.println("Ingrese una fecha inicial (YYYY-MM-DD): ");
+                    String fechaInicial = sc.nextLine();
 
-                    MyLinkedListImpl<ArtistaCantidad> cancionesTop7Artistas = top7ArtistasMasTop50Fecha("2023-08-11", "2024-05-13");
+                    System.out.println("Ingrese una fecha final (YYYY-MM-DD): ");
+                    String fechaFinal = sc.nextLine();
+
+                    MyLinkedListImpl<ArtistaCantidad> cancionesTop7Artistas = top7ArtistasMasTop50Fecha(fechaInicial, fechaFinal);
 
                     System.out.println("El top 7 artistas que mas aparece en el top 50 en el rango de fechas dado es: ");
                     for (int i = 0; i < cancionesTop7Artistas.size(); i++) {
@@ -377,49 +401,48 @@ public class Main {
 
                     break;
                 case 4:
-                    System.out.println("Ingrese el nombre del artista: ");
-                    String artista = sc.nextLine();
-                    artista = artista.trim();
+                    try {
+                        System.out.println("Ingrese el artista: ");
+                        String artista = sc.nextLine();
+                        artista = artista.trim();
 
-                    System.out.println("Ingrese una fecha (YYYY-MM-DD): ");
-                    String fechaArtista = sc.nextLine();
-                    fechaArtista = fechaArtista.trim();
+                        System.out.println("Ingrese una fecha (YYYY-MM-DD): ");
+                        String fecha4 = sc.nextLine();
+                        fecha4 = fecha4.trim();
 
-                    int cantidad = cantidadVecesArtistaTop50Fecha(artista, fechaArtista);
 
-                    System.out.println("El artista " + artista + " aparece " + cantidad + " veces en el top 50 en la fecha " + fechaArtista + ".");
+                        System.out.println();
+                        int cantidadVecesArtista = cantidadVecesArtistaTop50Fecha(artista, fecha4);
+                        System.out.println(artista +" aparecio " + cantidadVecesArtista +" veces" + " en tops 50 en la fecha dada");
+                        System.out.println();
 
-                    System.out.println();
+                    }catch (NullPointerException e){
+                        System.out.println("Ingrese una opcion valida");
+                    }
                     break;
+
                 case 5:
 
-//                    System.out.println("Ingrese una fecha inicial (YYYY-MM-DD): ");
-//                    String fechaInicial = sc.nextLine();
-//
-//                    System.out.println("Ingrese una fecha final (YYYY-MM-DD): ");
-//                    String fechaFinal = sc.nextLine();
-//
-//                    System.out.println("Ingrese el tempo minimo: ");
-//                    sc.nextLine();
-//                    int tempoMin = sc.nextInt();
-//
-//                    sc.nextLine();
-//
-//                    System.out.println("Ingrese el tempo maximo: ");
-//                    int tempoMax = sc.nextInt();
+                    System.out.println("Ingrese una fecha inicial (YYYY-MM-DD): ");
+                    String fechaInicial2 = sc.nextLine();
 
-//                    sc.nextLine();
+                    System.out.println();
+                    System.out.println("Ingrese una fecha final (YYYY-MM-DD): ");
+                    String fechaFinal2 = sc.nextLine();
 
+                    System.out.println();
+                    System.out.println("Ingrese el tempo minimo: ");
+                    int tempoMin = sc.nextInt();
+                    sc.nextLine();
 
+                    System.out.println();
+                    System.out.println("Ingrese el tempo maximo: ");
+                    int tempoMax = sc.nextInt();
 
-                    cantidadCancionesTempoRangoFecha(100, 150, "2023-10-18", "2024-05-13");
-                    cantidadCancionesTempoRangoFecha(50, 90, "2023-10-18", "2024-05-13");
-                    cantidadCancionesTempoRangoFecha(100, 130, "2023-10-18", "2024-02-14");
-
-
-
-                    int cantidadVecesTempo = cantidadCancionesTempoRangoFecha(100, 130, "2023-10-18", "2024-05-13");
+                    System.out.println();
+                    int cantidadVecesTempo = cantidadCancionesTempoRangoFecha(tempoMin, tempoMax, fechaInicial2, fechaFinal2);
                     System.out.println("Hay "+cantidadVecesTempo+" canciones entre las fechas dadas con un tempo en el rango dado.");
+                    System.out.println();
                     break;
                 case 0:
                     break;
