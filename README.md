@@ -7,3 +7,10 @@ Para que el programa funciones es necesario poner el CSV en la carpeta src. Tamb
 ##Carga de los datos
 Para cargar los datos, recorremos el archivo CSV y, por cada fila, creamos un objeto "canción". Este objeto se inserta en una estructura hash. Esta estructura hash contiene otro hash que a su vez contiene una lista. El primer hash utiliza la fecha como clave el segundo utiliza el código de país como clave y guarda una lista de canciones, la cual, debido a la estructura del CSV, ya viene ordenada por top diario.
 
+Tiempo promedio de las consutas 
+La consulta 1 se demora 0.3579 Milisegundos
+La consulta 2 se demora 26 Milisegundos 
+La consulta 3 se demora 1,3 segundos  (tomando la fecha inicial como la primera y la final como la ultima)
+La consulta 4 se demora 3.7332 Milisegundos
+La consulta 5 se demora 600 Milisegundos (tomando la fecha inicial como la primera y la final como la ultima)   
+
