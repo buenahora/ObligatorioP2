@@ -109,6 +109,19 @@ public class Main {
     public static MyList<Cancion> top10CancionesPaisFecha(String pais, String fecha) {
         MyList<Cancion> cancionesPaisFecha = new MyLinkedListImpl<>();
 
+        MyList<String> fechas = hashFechas.getKeys();
+        MyList<String> paises = hashFechas.getValue(fechas.get(0)).getKeys();
+
+        if (!fechas.contains(fecha)) {
+            System.out.println("No se encontraron canciones para la fecha ingresada.");
+            return cancionesPaisFecha;
+        }
+
+        if (!paises.contains(pais)) {
+            System.out.println("Ingrese un pais valido.");
+            return cancionesPaisFecha;
+        }
+
         MyList<Cancion> listaTop50 = hashFechas.getValue(fecha).getValue(pais);
 
         for (int i = 0; i < 10; i++) {
@@ -120,6 +133,13 @@ public class Main {
 
     public static MyList<Cancion> top5CancionesMasTop50Fecha(String fecha) throws ParseException, DuplicateKey {
         MyList<Cancion> cancionesMasTop50 = new MyLinkedListImpl<>();
+
+        MyList<String> fechas = hashFechas.getKeys();
+
+        if(!fechas.contains(fecha)) {
+            System.out.println("No se encontraron canciones para la fecha ingresada.");
+            return cancionesMasTop50;
+        }
 
         ClosedHashImpl<String, MyList<Cancion>> hashFechadada = hashFechas.getValue(fecha);
         MyList<String> keys = hashFechadada.getKeys();
@@ -177,9 +197,17 @@ public class Main {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         sdf.setLenient(false);
 
-        Date fechaInicio = sdf.parse(inicio);
-        Date fechaFin = sdf.parse(fin);
+        Date fechaInicio = null;
+        Date fechaFin = null;
 
+        try {
+             fechaInicio = sdf.parse(inicio);
+             fechaFin = sdf.parse(fin);
+        } catch (ParseException e) {
+            System.out.println("Ingrese fechas validas");
+            artistasMasTop7 = new MyLinkedListImpl<>();
+            return artistasMasTop7;
+        }
 
         for (int i = 0; i < fechasKeys.size(); i++) {
 
@@ -253,6 +281,11 @@ public class Main {
     public static int cantidadVecesArtistaTop50Fecha(String artista, String fecha) {
         int cantidad = 0;
 
+        MyList <String> keys = hashFechas.getKeys();
+        if(!keys.contains(fecha)){
+            return -1;
+        }
+
         MyList<String> keysPaises = hashFechas.getValue(fecha).getKeys();
 
         for (int k = 0; k < keysPaises.size(); k++) {
@@ -278,7 +311,7 @@ public class Main {
         return cantidad;
     }
 
-    public static int cantidadCancionesTempoRangoFecha(int tempoMin, int tempoMax, String inicio, String fin) throws ParseException {
+    public static int cantidadCancionesTempoRangoFecha(int tempoMin, int tempoMax, String inicio, String fin) throws ParseException, DuplicateKey {
 
         MyList<String> fechasKeys = hashFechas.getKeys();
         MyList<String> paisesKeys = hashFechas.getValue(fechasKeys.get(0)).getKeys();
@@ -287,9 +320,21 @@ public class Main {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         sdf.setLenient(false);
 
-        Date fechaInicio = sdf.parse(inicio);
-        Date fechaFin = sdf.parse(fin);
+
+        Date fechaInicio = null;
+        Date fechaFin = null;
+
+        try {
+            fechaInicio = sdf.parse(inicio);
+            fechaFin = sdf.parse(fin);
+        } catch (ParseException e) {
+            System.out.println("Ingrese fechas validas");
+            return -1;
+        }
+
         int contador = 0;
+
+        ClosedHashImpl<String, Integer> canciones = new ClosedHashImpl<>(10000);
 
 
         for (int i = 0; i < fechasKeys.size(); i++) {
@@ -297,9 +342,6 @@ public class Main {
             for (int j = 0; j < paisesKeys.size(); j++) {
                 String fecha = fechasKeys.get(i);
                 String pais = paisesKeys.get(j);
-
-
-                ClosedHashImpl<String, MyList<Cancion>> hashPaises = hashFechas.getValue(fecha);
 
                 MyList<Cancion> cancionesPais = hashFechas.getValue(fecha).getValue(pais);
 
@@ -314,7 +356,10 @@ public class Main {
                     if (isFechaEntre(fechaInicio, fechaFin, fechaCancion)) {
 
                         if (tempoMax >= (int) cancion.getTempo() && (int) cancion.getTempo() >= tempoMin) {
-                            contador++;
+                            if(!canciones.contains(cancion.getSpotify_id())) {
+                                contador++;
+                                canciones.insertar(cancion.getSpotify_id(), 1);
+                            }
                         }
 
                     }
@@ -329,10 +374,10 @@ public class Main {
 
     public static void main(String[] args) throws DuplicateKey, ParseException {
         leerCanciones();
-        Scanner sc = new Scanner(System.in);
         int option;
 
         do {
+            Scanner sc = new Scanner(System.in);
             System.out.println("Seleccione una opción:");
             System.out.println("1. Top 10 canciones en un país en un día dado");
             System.out.println("2. Top 5 canciones que aparecen en más top 50 en un día dado");
@@ -342,6 +387,7 @@ public class Main {
             System.out.println("0. Salir");
 
             option = sc.nextInt();
+
             sc.nextLine();
             System.out.println();
             switch (option) {
@@ -357,7 +403,6 @@ public class Main {
                     MyList<Cancion> cancionesPaisFecha = top10CancionesPaisFecha(pais, fecha);
 
                     if(cancionesPaisFecha.isEmpty()) {
-                        System.out.println("No se encontraron canciones para el país y fecha ingresados.");
                         break;
                     }
 
@@ -374,6 +419,10 @@ public class Main {
                     String fecha2 = sc.nextLine();
                     MyList<Cancion> cancionesTop5 = top5CancionesMasTop50Fecha(fecha2);
                     System.out.println();
+
+                    if(cancionesTop5.isEmpty()) {
+                        break;
+                    }
 
                     System.out.println("El top 5 de canciones que aparecen en mas top 50 es: ");
                     for (int i = 0; i < cancionesTop5.size(); i++) {
@@ -392,6 +441,10 @@ public class Main {
                     String fechaFinal = sc.nextLine();
 
                     MyLinkedListImpl<ArtistaCantidad> cancionesTop7Artistas = top7ArtistasMasTop50Fecha(fechaInicial, fechaFinal);
+
+                    if(cancionesTop7Artistas.isEmpty()) {
+                        break;
+                    }
 
                     System.out.println("El top 7 artistas que mas aparece en el top 50 en el rango de fechas dado es: ");
                     for (int i = 0; i < cancionesTop7Artistas.size(); i++) {
@@ -413,6 +466,17 @@ public class Main {
 
                         System.out.println();
                         int cantidadVecesArtista = cantidadVecesArtistaTop50Fecha(artista, fecha4);
+
+                        if(cantidadVecesArtista == -1) {
+                            System.out.println("No se encontraron canciones para la fecha ingresada.");
+                            break;
+                        }
+
+                        if(cantidadVecesArtista == 0) {
+                            System.out.println("El artista ingresado no aparece en el top 50 en la fecha dada.");
+                            break;
+                        }
+
                         System.out.println(artista +" aparecio " + cantidadVecesArtista +" veces" + " en tops 50 en la fecha dada");
                         System.out.println();
 
@@ -430,17 +494,36 @@ public class Main {
                     System.out.println("Ingrese una fecha final (YYYY-MM-DD): ");
                     String fechaFinal2 = sc.nextLine();
 
-                    System.out.println();
-                    System.out.println("Ingrese el tempo minimo: ");
-                    int tempoMin = sc.nextInt();
-                    sc.nextLine();
+                    int tempoMin;
+                    int tempoMax;
 
-                    System.out.println();
-                    System.out.println("Ingrese el tempo maximo: ");
-                    int tempoMax = sc.nextInt();
+                    try {
+                        do {
+                            System.out.println();
+                            System.out.println("Ingrese el tempo minimo (debe ser un numero mayor a 0): ");
+                            tempoMin = sc.nextInt();
+                        } while (tempoMin < 0);
+
+                        sc.nextLine();
+
+                        do {
+                            System.out.println();
+                            System.out.println("Ingrese el tempo maximo (debe ser un numero mayor a 0): ");
+                            tempoMax = sc.nextInt();
+                        } while (tempoMax < 0);
+                    } catch(Exception e) {
+                        System.out.println("Ingrese un numero valido.");
+                        break;
+                    }
+
 
                     System.out.println();
                     int cantidadVecesTempo = cantidadCancionesTempoRangoFecha(tempoMin, tempoMax, fechaInicial2, fechaFinal2);
+
+                    if(cantidadVecesTempo == -1) {
+                        break;
+                    }
+
                     System.out.println("Hay "+cantidadVecesTempo+" canciones entre las fechas dadas con un tempo en el rango dado.");
                     System.out.println();
                     break;
