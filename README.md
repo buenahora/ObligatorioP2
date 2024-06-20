@@ -9,8 +9,15 @@ Para cargar los datos, recorremos el archivo CSV y, por cada fila, creamos un ob
 
 Tiempo promedio de las consutas 
 La consulta 1 se demora 0.3579 Milisegundos
+
 La consulta 2 se demora 26 Milisegundos 
+
 La consulta 3 se demora 1,3 segundos  (tomando la fecha inicial como la primera y la final como la ultima)
+
 La consulta 4 se demora 3.7332 Milisegundos
+
 La consulta 5 se demora 600 Milisegundos (tomando la fecha inicial como la primera y la final como la ultima)   
+
+
+![image](https://github.com/buenahora/ObligatorioP2/assets/134079918/7e519b82-bce1-4c0f-8261-36487c6be2e1)
 
